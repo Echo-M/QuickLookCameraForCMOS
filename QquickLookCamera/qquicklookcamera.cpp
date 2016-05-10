@@ -24,7 +24,7 @@ QquickLookCamera::QquickLookCamera(QWidget *parent)
 	
 	ctrlFrame = new QFrame;
 	createControlFrame(); 
-	ctrlFrameDock = new QDockWidget(tr("ctrlFrameDock"), this);
+	ctrlFrameDock = new QDockWidget(tr("camea control"), this);
 	ctrlFrameDock->setFixedWidth(180);
 	ctrlFrameDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	ctrlFrameDock->setWidget(ctrlFrame);
@@ -82,11 +82,11 @@ void QquickLookCamera::createControlFrame()
 	});
 
 	QGridLayout *cameraParaLayout = new QGridLayout;
-	cameraParaLayout->setContentsMargins(8, 8, 8, 8);      //设置布局内部四边的空隙
-	cameraParaLayout->setAlignment(Qt::AlignHCenter);
-	//cameraParaLayout->setAlignment(Qt::AlignTop);
-	cameraParaLayout->setSpacing(15);                      //设置间距
-	cameraParaLayout->setMargin(4);
+	//cameraParaLayout->setContentsMargins(8, 8, 8, 8);      //设置布局内部四边的空隙
+	//cameraParaLayout->setAlignment(Qt::AlignHCenter);
+	////cameraParaLayout->setAlignment(Qt::AlignTop);
+	//cameraParaLayout->setSpacing(15);                      //设置间距
+	//cameraParaLayout->setMargin(4);
 
 	cameraParaLayout->addWidget(exposureRateLabel, 0, 0);
 	cameraParaLayout->addWidget(exposureRateLineEdit, 1, 0);
@@ -94,15 +94,26 @@ void QquickLookCamera::createControlFrame()
 	cameraParaLayout->addWidget(frameRateLabel, 3, 0);
 	cameraParaLayout->addWidget(frameRateLineEdit, 4, 0);
 	cameraParaLayout->addWidget(frameRateOKButton, 5, 0);
+
 	QGroupBox *cameraPara = new QGroupBox(tr("camera parameter"));
 	cameraPara->setContentsMargins(20, 20, 20, 20);
 	cameraPara->setLayout(cameraParaLayout);
+
+	QPushButton *initButton = new QPushButton(tr("Initial"));
+	connect(initButton, &QPushButton::clicked, this, &QquickLookCamera::Initial);
+	QPushButton *startButton = new QPushButton(tr("Start"));
+	connect(startButton, &QPushButton::clicked, this, &QquickLookCamera::Start);
+	QPushButton *stopButton = new QPushButton(tr("Stop"));
+	connect(stopButton, &QPushButton::clicked, this, &QquickLookCamera::Stop);
 
 	//Frame布局
 	QGridLayout *frameLayout = new QGridLayout;
 	frameLayout->setMargin(5);
 	frameLayout->setSpacing(10);
-	frameLayout->addWidget(cameraPara, 1, 0, 4, 1);
+	frameLayout->addWidget(initButton, 0, 0);
+	frameLayout->addWidget(startButton, 1, 0);
+	frameLayout->addWidget(stopButton, 2, 0);
+	frameLayout->addWidget(cameraPara, 3, 0);
 	ctrlFrame->setLayout(frameLayout);
 }
 

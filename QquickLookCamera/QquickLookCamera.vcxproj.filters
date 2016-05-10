@@ -201,8 +201,7 @@
   <ItemGroup>
     <None Include="QquickLookCamera.pri" />
     <None Include="QquickLookCamera.pro" />
-    <None Include="QquickLookCamera.qm" />
-    <None Include="QquickLookCamera.ts">
+    <None Include="qquicklookcamera_zh.ts">
       <Filter>Translation Files</Filter>
     </None>
   </ItemGroup>

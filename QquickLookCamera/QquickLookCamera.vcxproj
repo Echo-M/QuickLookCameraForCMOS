@@ -319,8 +319,7 @@
   <ItemGroup>
     <None Include="QquickLookCamera.pri" />
     <None Include="QquickLookCamera.pro" />
-    <None Include="QquickLookCamera.qm" />
-    <None Include="QquickLookCamera.ts" />
+    <None Include="qquicklookcamera_zh.ts" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
