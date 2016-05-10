@@ -117,69 +117,99 @@ void ArrayCameraDataItem::process()
     }
 }  
 
+//只要丢包就丢弃
+
+//void ArrayCameraDataItem::storePayloadData(const unsigned char *buf)
+//{
+//	//面阵相机包格式处理流程：
+//	//提取帧计数（从0开始），检查行号，帧计数跳变后，行号应该从0开始，帧计数未跳变时，根据分通道检查图像数据
+//	//行号是否+1递增，正常则填入数据缓存相应的位置，错误则报错。未
+//	//满一帧但行号归0，报错，行标识不对，报错，包长度不对，报错。
+//
+//	const CMOS_FRAME_HEAD* pkgHeader = reinterpret_cast<const CMOS_FRAME_HEAD*>(buf);//指向包头
+//	int headerSize = sizeof(CMOS_FRAME_HEAD);
+//	long long frmCnt = ntohl(pkgHeader->frmCount);//帧计数
+//	long long curLineCnt = ntohl(pkgHeader->lineCount);//行号
+//
+//	if (-1 == m_newFrame)//第一次
+//	{
+//		//printf("\nfirst time!!");
+//		if (curLineCnt != 0)
+//		{
+//			//printf("\nhalf-baked frame appears!!");
+//			return;
+//		}
+//		m_newFrame = frmCnt; //set current framecnt then next
+//		if (frmCnt != m_curFrameCnt + 1)
+//		{
+//
+//			//printf("\nframe counter error!!");
+//			//return;
+//		}
+//		m_curFrameCnt = frmCnt;
+//	}
+//
+//	int& lineCnt = m_curLineCnt;
+//	int imgLineSize = m_features->payloadDataWidth;
+//	int assLineSize = m_features->attachedDataWidth;
+//	int lineSize = imgLineSize + assLineSize;
+//
+//	//帧计数未跳变，行号加1递增
+//	if (frmCnt == m_newFrame && (lineCnt + 1 == curLineCnt || -1 == lineCnt))
+//	{
+//		lineCnt = curLineCnt;
+//		if (curLineCnt >= m_features->linesPerFrame)
+//		{
+//			//printf("\n>=(1024) lines");
+//			return;
+//		}
+//		if (m_dualImageBuffer[0])
+//		{
+//			unsigned char *buffer = m_dualImageBuffer[0].get() + curLineCnt*imgLineSize;
+//			for (int i = 0; i < imgLineSize; ++i)
+//			{
+//				buffer[i] = buf[imgLineSize - i + headerSize];  //buf->m_dualImageBuffer[0]
+//			}
+//		}
+//
+//		if (curLineCnt == m_features->linesPerFrame - 1)//一帧的最后一行，将缓冲区[0]放入[1]中
+//		{
+//			resetCounter();  //reset and look for the first line of next img
+//			if (m_dualImageBuffer[0] && m_dualImageBuffer[1])
+//				memcpy(m_dualImageBuffer[1].get(), m_dualImageBuffer[0].get(), m_features->linesPerFrame*imgLineSize);
+//		}
+//	}
+//	else
+//	{
+//		resetCounter();  //reset and look for the first line of next img
+//	}
+//}
+
+//不做丢包处理
 void ArrayCameraDataItem::storePayloadData(const unsigned char *buf)
 {
 	//面阵相机包格式处理流程：
-	//提取帧计数（从0开始），检查行号，帧计数跳变后，行号应该从0开始，帧计数未跳变时，根据分通道检查图像数据
-	//行号是否+1递增，正常则填入数据缓存相应的位置，错误则报错。未
-	//满一帧但行号归0，报错，行标识不对，报错，包长度不对，报错。
+	//只要收到1024个数据包就认为收到了一帧图像，并进行缓存
 
-	const CMOS_FRAME_HEAD* pkgHeader = reinterpret_cast<const CMOS_FRAME_HEAD*>(buf);//指向包头
 	int headerSize = sizeof(CMOS_FRAME_HEAD);
-	long long frmCnt = ntohl(pkgHeader->frmCount);//帧计数
-	long long curLineCnt = ntohl(pkgHeader->lineCount);//行号
-
-	if (-1 == m_newFrame)//第一次
-	{
-		//printf("\nfirst time!!");
-		if (curLineCnt != 0)
-		{
-			//printf("\nhalf-baked frame appears!!");
-			return;
-		}
-		m_newFrame = frmCnt; //set current framecnt then next
-		if (frmCnt != m_curFrameCnt + 1)
-		{
-
-			//printf("\nframe counter error!!");
-			//return;
-		}
-		m_curFrameCnt = frmCnt;
-	}
-
-	int& lineCnt = m_curLineCnt;
 	int imgLineSize = m_features->payloadDataWidth;
-	int assLineSize = m_features->attachedDataWidth;
-	int lineSize = imgLineSize + assLineSize;
+	
+	static int counter = 0; // 计数
 
-	//帧计数未跳变，行号加1递增
-	if (frmCnt == m_newFrame && (lineCnt + 1 == curLineCnt || -1 == lineCnt))
+	if (m_dualImageBuffer[0])
 	{
-		lineCnt = curLineCnt;
-		if (curLineCnt >= m_features->linesPerFrame)
+		unsigned char *buffer = m_dualImageBuffer[0].get() + counter*imgLineSize;
+		for (int i = 0; i < imgLineSize; ++i)
 		{
-			//printf("\n>=(1024) lines");
-			return;
-		}
-		if (m_dualImageBuffer[0])
-		{
-			unsigned char *buffer = m_dualImageBuffer[0].get() + curLineCnt*imgLineSize;
-			for (int i = 0; i < imgLineSize; ++i)
-			{
-				buffer[i] = buf[imgLineSize - i + headerSize];  //buf->m_dualImageBuffer[0]
-			}
-		}
-
-		if (curLineCnt == m_features->linesPerFrame - 1)//一帧的最后一行，将缓冲区[0]放入[1]中
-		{
-			resetCounter();  //reset and look for the first line of next img
-			if (m_dualImageBuffer[0] && m_dualImageBuffer[1])
-				memcpy(m_dualImageBuffer[1].get(), m_dualImageBuffer[0].get(), m_features->linesPerFrame*imgLineSize);
+			buffer[i] = buf[imgLineSize - i + headerSize];  //放入buf->m_dualImageBuffer[0]
 		}
 	}
-	else
+
+	if (counter >= 1024)//一帧的最后一行，将缓冲区[0]放入[1]中
 	{
-		resetCounter();  //reset and look for the first line of next img
+		if (m_dualImageBuffer[0] && m_dualImageBuffer[1])
+			memcpy(m_dualImageBuffer[1].get(), m_dualImageBuffer[0].get(), m_features->linesPerFrame*imgLineSize);
+		counter = 0;
 	}
 }
 
