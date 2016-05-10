@@ -30,11 +30,11 @@ public:
 	//设置CMOS编号，在调用发送指令的函数前应设置本函数
 	bool SetCmosId(CMOSID id);
 	bool Initial();
-	bool Run();
+	bool Start();
 	bool Stop();
 
 protected:
-	bool Start();
+	bool OpenSystem();
 	bool Reset();
 	bool PowerUp();
 	bool EnableClockManagement1();

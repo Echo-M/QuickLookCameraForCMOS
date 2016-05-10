@@ -138,7 +138,7 @@ bool Instruction::Initial()
 	return true;
 }
 
-bool Instruction::Run()
+bool Instruction::Start()
 {
 	if (cmosId == NoCMOS)
 		return false;
@@ -166,7 +166,7 @@ bool Instruction::Stop()
 	return true;
 }
 
-bool Instruction::Start()
+bool Instruction::OpenSystem()
 {
 	CMD *cmd = new CMD;
 	cmd->synWord = htonl(0x03CCF0FF);
