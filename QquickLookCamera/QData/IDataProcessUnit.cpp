@@ -1,5 +1,4 @@
 #include "IDataProcessUnit.h"
-#include "IBuffer.h"
 #include "CirQueue.h"
 
 //template<int MaxInputChannel, int MaxOutputChannel>

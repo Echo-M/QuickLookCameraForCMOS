@@ -1,19 +1,14 @@
 #ifndef QQUICKLOOKCAMERA_H
 #define QQUICKLOOKCAMERA_H
 
-#include <QtWidgets/QMainWindow>
+#include <QMainWindow>
+
 #include "ui_qquicklookcamera.h"
 #include "myclass.h"
-#include <QInputDialog>
-#include "instruct/Command.h"
-#include <QMouseEvent>
-#include <QComboBox>
-#include <QPushButton>
-#include <QDockWidget>
-#include <qframe.h>
-#include <qgroupbox.h>
-#include <QFileDialog>
-#include "../UI/ag_cg_dialog.h"
+#include "./instruct/Instruction.h"
+class QLabel;
+
+//该类提供整个上位机的主窗口
 class QquickLookCamera : public QMainWindow
 {
 	Q_OBJECT
@@ -21,83 +16,77 @@ public:
 	QquickLookCamera(QWidget *parent = 0);
 	~QquickLookCamera();
 
+	//创建相机控制子窗口
 	void createControlFrame();
+	//创建动作
 	void createActions();
+	//创建菜单栏
 	void createMenus();
 	// void createToolBars();
+	//创建状态栏
 	void cerateStatus();
 
 public slots :
-	void showOpenFile();
-	void stopComs();
-	void autoExposure();
-	void manualExposure();
-	void showAboutMSg();
-	void showExpoTime();
-	void showDigGain();
-	void showATI();
-	void showAG_CG();
-	void showRegister();
-
+	void OpenFile();
 	void saveFlie();
-	//void rotate90();
 
-private:   //主界面
-	Ui::QquickLookCameraClass ui;
-    QString digtalGain;  //全局变量保存上一次输入值
-	QString expTime;
+	void Initial();
+	void Start();
+	void Stop();
+
+	void setExposureRate(int _rate);
+	void setFrameRate(int _rate);
+
+private: 
+	//Ui::QquickLookCameraClass ui; //不使用UI，使用纯代码的方式添加控件
+
 	QString filename;
 	MyClass *showWidget;
-	Command *command;
+	Instruction *instructionE;
+	Instruction *instruction1;
+	Instruction *instruction2;
+	Instruction *instruction3;
 	QFrame *ctrlFrame;
 	QDockWidget *ctrlFrameDock;
 
-private:	//新建的dialog
-	AG_CG_Dialog *ag_cg_dialog;
-	//QComboBox *AG_CGcomBox;
-
 private:
-	QLineEdit *expTimeEdit;
-	QLineEdit *digtalGainEdit;
-	QLineEdit *setATIEdit;
-	QLineEdit *setAG_CG_Edit;
-	QLineEdit *setRegisterDddr;
-	QLineEdit *setRegisterDate;
-private:
-	QMenu *fileMenu;    //菜单栏
-	QMenu *netParaMenu;
-	QMenu *cameraContrMenu;
-	QMenu *cameraParaMenu;
-	QMenu *rotateMenu;
-	QMenu *modeMenu;
+	//菜单栏
+	QMenu *fileMenu;//文件（打开、保存、退出）
+	QMenu *dataControlMenu;//数据控制（初始化、上传、停止）
+	QMenu *cameraControlMenu;//相机控制（曝光率、帧率）
+	QMenu *motorControlMenu;//电机控制
 	QMenu *helpMenu;
 
+	//菜单栏对应动作
 	QAction *openFileAction;
 	QAction *saveAction;
 	QAction *exitAction;
-	QAction *setNetAction;
-	QAction *setExpoTimeAction;
-	QAction *setDigGainAction;
-	QAction *setATIAction;
-	QAction *setAG_CG_Action;
-	QAction *setRegisterAction;
-	QAction *rotate90Action;
-	QAction *autoAction;
-	QAction *manualAction;
+
+	QAction *initAction;
 	QAction *startAction;
 	QAction *stopAction;
-	QAction *mode1Action;
-	QAction *mode2Action;
+
+	QAction *setExposureRateAction;
+	QAction *setFrameRateAction;
+
 	QAction *aboutAction;
 
-	QToolBar *fileTool;
+	QLineEdit *exposureRateLineEdit;
+	QLineEdit *frameRateLineEdit;
+
+	int exposureRate{ 0 };
+	int frameRate{ 0 };
+
+	//工具栏
+	/*QToolBar *fileTool;
 	QToolBar *zoomTool;
 	QToolBar *rotateTool;
 	QToolBar *mirrorTool;
-	QToolBar *doToolBar;
+	QToolBar *doToolBar;*/
 
-	QLabel  *statusLabel;  //状态栏
-	QLabel  *framRate;
+	//状态栏
+	QLabel  *statusLabel;
+	QLabel  *frameRateLabel;
 	
 };
 

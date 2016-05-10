@@ -4,7 +4,6 @@
 #include <QtWidgets/QMainWindow>
 #include "./QData/InputCMOS.h"
 #include "./QData/ArrayCameraDataItem.h"
-//#include "./QData/rotateDateProvider.h"
 #include "./QView/IWindowItem.h"
 #include "./QView/Utility/Pixel8To32.h"
 #include "./QView/Utility/bayer2rgb.h"
@@ -12,6 +11,7 @@
 #include "./QView/ImageMagnifierItem.h"  //class ImageMagnifierItem;
 #include "./SaveFile/SaveToBmp24.h"
 #include "./SaveFile/SaveToBmpGray.h"
+#include "../QData/CirQueue.h"
 #include <QTimer>
 #include <QDebug>
 

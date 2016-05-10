@@ -3,8 +3,7 @@
 
 #include <thread>
 #include <memory>
-class IBuffer;
-class CirQueue;
+#include "CirQueue.h"
 class SaveProxy;
 class QString;
 

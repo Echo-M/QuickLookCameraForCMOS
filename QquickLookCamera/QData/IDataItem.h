@@ -2,7 +2,7 @@
 #define IDATAITEM_H
 
 #include "FeaturesOfDataItem.h"
-
+#include <memory>
 
 class IDataItem
 {

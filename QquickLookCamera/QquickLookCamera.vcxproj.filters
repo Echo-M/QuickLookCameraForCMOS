@@ -97,18 +97,6 @@
     <ClCompile Include="QView\ImageMagnifierItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="instruct\Command.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\ag_cg_dialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ag_cg_dialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ag_cg_dialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="QView\Utility\bayer2rgb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -130,6 +118,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_myclass.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="instruct\Instruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="qquicklookcamera.h">
@@ -143,12 +134,6 @@
     </CustomBuild>
     <CustomBuild Include="QView\ImageMagnifierItem.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="UI\ag_cg_dialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="ag_cg_dialog.ui">
-      <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="myclass.h">
       <Filter>Header Files</Filter>
@@ -194,12 +179,6 @@
     <ClInclude Include="QView\Utility\PixelConvertor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="instruct\Command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_ag_cg_dialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="QView\Utility\bayer2rgb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -210,6 +189,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SaveFile\SaveToBmpGray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="instruct\Instruction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

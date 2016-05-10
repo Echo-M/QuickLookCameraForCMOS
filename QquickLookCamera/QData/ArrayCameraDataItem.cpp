@@ -1,8 +1,7 @@
 ﻿#include "ArrayCameraDataItem.h"
 #include "IBuffer.h"
 #include "FeaturesOfDataItem.h"
-#include "IDataProcessUnit.h"
-#include "IDataItem.h"
+
 #include <string.h>  //memcpy
 
 #include "initsock.h"

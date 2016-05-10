@@ -3,16 +3,15 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include "QDebug"
 MyClass::MyClass(QWidget *parent,Qt::WindowFlags f)
 : QWidget(parent,f),
   gridLayout(new QGridLayout(this))
 {
 	//初始化数据缓冲区
-	std::dynamic_pointer_cast<CCirQueue>(m_cmosData0)->Initial(1024 * 1300 * 256, 1024 * 1300 * 4);
-	std::dynamic_pointer_cast<CCirQueue>(m_cmosData1)->Initial(1024 * 1300 * 256, 1024 * 1300 * 4);
-	std::dynamic_pointer_cast<CCirQueue>(m_cmosData2)->Initial(1024 * 1300 * 256, 1024 * 1300 * 4);
-	std::dynamic_pointer_cast<CCirQueue>(m_cmosData3)->Initial(1024 * 1300 * 256, 1024 * 1300 * 4);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosData0)->Initial(1024 * 1300 * 128, 1024 * 1300 * 1);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosData1)->Initial(1024 * 1300 * 128, 1024 * 1300 * 1);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosData2)->Initial(1024 * 1300 * 128, 1024 * 1300 * 1);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosData3)->Initial(1024 * 1300 * 128, 1024 * 1300 * 1);
 	//数据源注册输出缓冲区
 	m_inputSrc0->registerOutputBuffer(0, m_cmosData0);  //向输出缓冲区中送数据
 	m_inputSrc1->registerOutputBuffer(0, m_cmosData1);	

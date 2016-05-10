@@ -1,9 +1,8 @@
 #ifndef ARRAYCAMERADATAITEM_H
 #define ARRAYCAMERADATAITEM_H
 
-
-class IDataItem;
-class IDataProcessUnit;
+#include "IDataProcessUnit.h"
+#include "IDataItem.h"
 
 #define FRM_SYNWORD 0x499602D2
 

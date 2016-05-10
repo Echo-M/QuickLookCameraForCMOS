@@ -32,6 +32,8 @@ public:
 	bool Initial();
 	bool Start();
 	bool Stop();
+	bool SetExposureRate(int _rate){ return true; }
+	bool SetFrameRate(int _rate){ return true; }
 
 protected:
 	bool OpenSystem();
