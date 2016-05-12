@@ -7,10 +7,6 @@ Instruction::Instruction(USHORT port_target, ULONG ip_target, USHORT port_local 
 	maxWaitUS(0),
 	cmosId(NoCMOS)
 {
-	sock = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	ULONG ul = 1;
-	::ioctlsocket(sock, FIONBIO, (ULONG*)&ul);//设为非阻塞模式
-
 	//填写本地地址信息
 	addr_local.sin_family = AF_INET;
 	addr_local.sin_addr.S_un.S_addr = ip_local;
@@ -21,17 +17,15 @@ Instruction::Instruction(USHORT port_target, ULONG ip_target, USHORT port_local 
 	addr_target.sin_addr.S_un.S_addr = ip_target;
 	addr_target.sin_port = htons(port_target);
 
-	//将套接字与对应地址绑定
-	if (::bind(sock, (LPSOCKADDR)&addr_local, sizeof(addr_local)) == SOCKET_ERROR)
-	{
-		std::cout << "绑定失败" << std::endl;
-		//return;
-	}
+	//填写本地地址信息
+	addr_far.sin_family = AF_INET;
+	addr_far.sin_addr.S_un.S_addr = ip_target;
+	addr_far.sin_port = htons(3954);//之后要修改
 }
 
 Instruction::~Instruction()
 {
-	::closesocket(sock);
+	
 }
 
 bool Instruction::SetCmosId(CMOSID id)
@@ -77,7 +71,7 @@ bool Instruction::buildCmdReg(CMD* _cmd, int _addr, int _data)
 
 bool Instruction::sendCmdReg(int _addr, int _data)
 {
-	int alen = sizeof(addr_target);
+	int alen = sizeof(addr_far);
 	fd_set fdsock;//套接字集合
 	struct timeval timeout;
 	CMD* cmd = new CMD; //发送和接收的指令
@@ -85,45 +79,74 @@ bool Instruction::sendCmdReg(int _addr, int _data)
 	timeout.tv_sec = maxWaitS; // 等待时间（s）
 	timeout.tv_usec = maxWaitUS; // 等待时间（μs）
 
-	while (1)
+	//while (1)
+	for (int i = 0; i < 10;++i)
 	{
 		if (!buildCmdReg(cmd, _addr, _data))
 		{
 			return false;
 		}
+
+		//发送指令
+		ULONG u1 = 1;
+		SOCKET sock;
+		sock = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		::ioctlsocket(sock, FIONBIO, (ULONG*)&u1);//设为非阻塞模式
+		//将套接字与对应地址绑定
+		if (::bind(sock, (LPSOCKADDR)&addr_local, sizeof(addr_local)) == SOCKET_ERROR)
+		{
+			std::cout << "绑定失败" << std::endl;
+			//return;
+		}
 		::sendto(sock, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_target, sizeof(addr_target));
+		::closesocket(sock);
+
 		cmdCounter++;
-		FD_ZERO(&fdsock); // 先清空
-		FD_SET(sock, &fdsock);
-		int nret = ::select(0, &fdsock, NULL, NULL, &timeout);//select()返回值：有未决I/O的套接字句柄的个数
-		if (nret > 0)
-		{
-			if (FD_ISSET(sock, &fdsock))//若该套接字可读
-			{
-				int nrecv = ::recvfrom(sock, (char*)cmd, sizeof(CMD), 0, (LPSOCKADDR)&addr_target, &alen);
-				if (nrecv == 24)
-				//if (ntohl(cmd->synWord) == 0x05CCF0FF && ntohs(cmd->form) == 0x && ntohll(cmd->data) == 0x )
-				{
-					return true;
-				}
-			}
-		}
-		count++;
-		if (count >= maxSend)
-		{
-			return false;
-		}
+
+		////接收指令
+		//ULONG u2 = 1;
+		//sock = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		//::ioctlsocket(sock, FIONBIO, (ULONG*)&u2);//设为非阻塞模式
+		////将套接字与对应地址绑定
+		//if (::bind(sock, (LPSOCKADDR)&addr_local, sizeof(addr_local)) == SOCKET_ERROR)
+		//{
+		//	std::cout << "绑定失败" << std::endl;
+		//	//return;
+		//}
+		//FD_ZERO(&fdsock); // 先清空
+		//FD_SET(sock, &fdsock);
+		//int nret = ::select(0, &fdsock, NULL, NULL, &timeout);//select()返回值：有未决I/O的套接字句柄的个数
+		//if (nret > 0)
+		//{
+		//	if (FD_ISSET(sock, &fdsock))//若该套接字可读
+		//	{
+		//		int nrecv = ::recvfrom(sock, (char*)cmd, sizeof(CMD), 0, (LPSOCKADDR)&addr_far, &alen);
+		//		if (nrecv == 24)
+		//		if (ntohl(cmd->synWord) == 0x05CCF0FF)
+		//		{
+		//			std::cout << "第" << cmdCounter <<"条指令发送成功！"<< std::endl;
+		//			::closesocket(sock);
+		//			return true;
+		//		}
+		//	}
+		//}
+		//count++;
+		//if (count >= maxSend)
+		//{
+		//	std::cout << "第" << cmdCounter << "条指令发送失败！" << std::endl;
+		//	::closesocket(sock);
+		//	return false;
+		//}
+		//::closesocket(sock);
 	}
 }
 
 bool Instruction::Initial()
 {
-	if (cmosId == NoCMOS)
-		return false;
-	if (!Start())
+	/*if (!Start())
 		return false;
 	if (!Reset())
-		return false;
+		return false;*/
 	if (!PowerUp())
 		return false;
 	if (!EnableClockManagement1())
@@ -140,122 +163,113 @@ bool Instruction::Initial()
 
 bool Instruction::Start()
 {
-	if (cmosId == NoCMOS)
-		return false;
 	if (!EnableSequencer())
 		return false;
 
 	return true;
 }
 
-bool Instruction::Stop()
-{
-	if (cmosId == NoCMOS)
-		return false;
-	if (!DisableSequencer())
-		return false;
-	if (!SoftPowerDown())
-		return false;
-	if (!DisableClockManagement2())
-		return false;
-	if (!DisableClockManagement1())
-		return false;
-	if (!PowerOff())
-		return false;
+//bool Instruction::Open()
+//{
+//	if (cmosId == NoCMOS)
+//		return false;
+//
+//	CMD *cmd = new CMD;
+//	cmd->synWord = htonl(0x03CCF0FF);
+//	cmd->dataLength = htonl(0x00000002);
+//	cmd->counter = htons(cmdCounter);
+//	cmd->form = htons(0x0100);
+//	cmd->timeStamp = htons(0x0000);
+//	cmd->checkSum = htons(0x0000);
+//	cmd->data = htonll(0x0000000100000000);
+//
+//	sockaddr_in addr_far;
+//	int alen = sizeof(addr_far);
+//	fd_set fdsock;//套接字集合
+//	struct timeval timeout;
+//	int count{ 0 }; //发送次数计数
+//	timeout.tv_sec = maxWaitS; // 等待时间（s）
+//	timeout.tv_usec = maxWaitUS; // 等待时间（μs）
+//	while (1)
+//	{
+//		::sendto(sock, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_target, sizeof(addr_target));
+//		cmdCounter++;
+//		FD_ZERO(&fdsock); // 先清空
+//		FD_SET(sock, &fdsock);
+//		int nret = ::select(0, &fdsock, NULL, NULL, &timeout);//select()返回值：有未决I/O的套接字句柄的个数
+//		if (nret > 0)
+//		{
+//			if (FD_ISSET(sock, &fdsock))//若该套接字可读
+//			{
+//				int nrecv = ::recvfrom(sock, (char*)cmd, sizeof(CMD), 0, (LPSOCKADDR)&addr_far, &alen);
+//				if (nrecv == 24)
+//				if (ntohl(cmd->synWord) == 0x05CCF0FF)
+//				{
+//					return true;
+//				}
+//			}
+//		}
+//		count++;
+//		if (count >= maxSend)
+//		{
+//			return false;
+//		}
+//	}
+//}
 
-	return true;
-}
-
-bool Instruction::OpenSystem()
-{
-	CMD *cmd = new CMD;
-	cmd->synWord = htonl(0x03CCF0FF);
-	cmd->dataLength = htonl(0x00000002);
-	cmd->counter = htons(cmdCounter);
-	cmd->form = htons(0x0100);
-	cmd->timeStamp = htons(0x0000);
-	cmd->checkSum = htons(0x0000);
-	cmd->data = htonll(0x0000000100000000);
-
-	int alen = sizeof(addr_target);
-	fd_set fdsock;//套接字集合
-	struct timeval timeout;
-	int count{ 0 }; //发送次数计数
-	timeout.tv_sec = maxWaitS; // 等待时间（s）
-	timeout.tv_usec = maxWaitUS; // 等待时间（μs）
-	while (1)
-	{
-		::sendto(sock, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_target, sizeof(addr_target));
-		cmdCounter++;
-		FD_ZERO(&fdsock); // 先清空
-		FD_SET(sock, &fdsock);
-		int nret = ::select(0, &fdsock, NULL, NULL, &timeout);//select()返回值：有未决I/O的套接字句柄的个数
-		if (nret > 0)
-		{
-			if (FD_ISSET(sock, &fdsock))//若该套接字可读
-			{
-				int nrecv = ::recvfrom(sock, (char*)cmd, sizeof(CMD), 0, (LPSOCKADDR)&addr_target, &alen);
-				if (nrecv == 24)
-					//if (ntohl(cmd->synWord) == 0x05CCF0FF && ntohs(cmd->form) == 0x && ntohll(cmd->data) == 0x )
-				{
-					return true;
-				}
-			}
-		}
-		count++;
-		if (count >= maxSend)
-		{
-			return false;
-		}
-	}
-}
-
-bool Instruction::Reset()
-{
-	CMD *cmd = new CMD;
-	cmd->synWord = htonl(0x03CCF0FF);
-	cmd->dataLength = htonl(0x00000002);
-	cmd->counter = htons(cmdCounter);
-	cmd->form = htons(0x0100);
-	cmd->timeStamp = htons(0x0000);
-	cmd->checkSum = htons(0x0000);
-	cmd->data = htonll(0x0000000200000000);
-	
-	int alen = sizeof(addr_target);
-	fd_set fdsock;//套接字集合
-	struct timeval timeout;
-	int count{ 0 }; //发送次数计数
-	timeout.tv_sec = maxWaitS; // 等待时间（s）
-	timeout.tv_usec = maxWaitUS; // 等待时间（μs）
-	while (1)
-	{
-		::sendto(sock, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_target, sizeof(addr_target));
-		cmdCounter++;
-		FD_ZERO(&fdsock); // 先清空
-		FD_SET(sock, &fdsock);
-		int nret = ::select(0, &fdsock, NULL, NULL, &timeout);//select()返回值：有未决I/O的套接字句柄的个数
-		if (nret > 0)
-		{
-			if (FD_ISSET(sock, &fdsock))//若该套接字可读
-			{
-				int nrecv = ::recvfrom(sock, (char*)cmd, sizeof(CMD), 0, (LPSOCKADDR)&addr_target, &alen);
-				if (nrecv == 24)
-					//if (ntohl(cmd->synWord) == 0x05CCF0FF && ntohs(cmd->form) == 0x && ntohll(cmd->data) == 0x )
-				{
-					return true;
-				}
-			}
-		}
-		count++;
-		if (count >= maxSend)
-		{
-			return false;
-		}
-	}
-}
+//bool Instruction::Reset()
+//{
+//	if (cmosId == NoCMOS)
+//		return false;
+//
+//	CMD *cmd = new CMD;
+//	cmd->synWord = htonl(0x03CCF0FF);
+//	cmd->dataLength = htonl(0x00000002);
+//	cmd->counter = htons(cmdCounter);
+//	cmd->form = htons(0x0100);
+//	cmd->timeStamp = htons(0x0000);
+//	cmd->checkSum = htons(0x0000);
+//	cmd->data = htonll(0x0000000200000000);
+//	
+//	sockaddr_in addr_far;
+//	int alen = sizeof(addr_far);
+//	fd_set fdsock;//套接字集合
+//	struct timeval timeout;
+//	int count{ 0 }; //发送次数计数
+//	timeout.tv_sec = maxWaitS; // 等待时间（s）
+//	timeout.tv_usec = maxWaitUS; // 等待时间（μs）
+//	while (1)
+//	{
+//		::sendto(sock, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_target, sizeof(addr_target));
+//		cmdCounter++;
+//		FD_ZERO(&fdsock); // 先清空
+//		FD_SET(sock, &fdsock);
+//		int nret = ::select(0, &fdsock, NULL, NULL, &timeout);//select()返回值：有未决I/O的套接字句柄的个数
+//		if (nret > 0)
+//		{
+//			if (FD_ISSET(sock, &fdsock))//若该套接字可读
+//			{
+//				int nrecv = ::recvfrom(sock, (char*)cmd, sizeof(CMD), 0, (LPSOCKADDR)&addr_target, &alen);
+//				if (nrecv == 24)
+//				if (ntohl(cmd->synWord) == 0x05CCF0FF)
+//				{
+//					return true;
+//				}
+//			}
+//		}
+//		count++;
+//		if (count >= maxSend)
+//		{
+//			return false;
+//		}
+//	}
+//}
 
 bool Instruction::PowerUp()
 {
+	if (cmosId == NoCMOS)
+		return false;
+
 	CMD *cmd = new CMD;
 	cmd->synWord = htonl(0x03CCF0FF);
 	cmd->dataLength = htonl(0x00000002);
@@ -265,36 +279,66 @@ bool Instruction::PowerUp()
 	cmd->checkSum = htons(0x0000);
 	cmd->data = htonll(0x0000000100000000);
 	
-	int alen = sizeof(addr_target);
+	int alen = sizeof(addr_far);
 	fd_set fdsock;//套接字集合
 	struct timeval timeout;
 	int count{ 0 }; //发送次数计数
 	timeout.tv_sec = maxWaitS; // 等待时间（s）
 	timeout.tv_usec = maxWaitUS; // 等待时间（μs）
-	while (1)
+	//while (1)
+	for (int i = 0; i < 10; ++i)
 	{
+		//发送指令
+		ULONG u1 = 1;
+		SOCKET sock;
+		sock = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		::ioctlsocket(sock, FIONBIO, (ULONG*)&u1);//设为非阻塞模式
+		//将套接字与对应地址绑定
+		if (::bind(sock, (LPSOCKADDR)&addr_local, sizeof(addr_local)) == SOCKET_ERROR)
+		{
+			std::cout << "绑定失败" << std::endl;
+			//return;
+		}
 		::sendto(sock, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_target, sizeof(addr_target));
+		::closesocket(sock);
+
 		cmdCounter++;
-		FD_ZERO(&fdsock); // 先清空
-		FD_SET(sock, &fdsock);
-		int nret = ::select(0, &fdsock, NULL, NULL, &timeout);//select()返回值：有未决I/O的套接字句柄的个数
-		if (nret > 0)
-		{
-			if (FD_ISSET(sock, &fdsock))//若该套接字可读
-			{
-				int nrecv = ::recvfrom(sock, (char*)cmd, sizeof(CMD), 0, (LPSOCKADDR)&addr_target, &alen);
-				if (nrecv == 24)
-				//if (ntohl(cmd->synWord) == 0x05CCF0FF && ntohs(cmd->form) == 0x && ntohll(cmd->data) == 0x )
-				{
-					return true;
-				}
-			}
-		}
-		count++;
-		if (count >= maxSend)
-		{
-			return false;
-		}
+
+		////接收指令
+		//ULONG u2 = 1;
+		//sock = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		//::ioctlsocket(sock, FIONBIO, (ULONG*)&u2);//设为非阻塞模式
+		////将套接字与对应地址绑定
+		//if (::bind(sock, (LPSOCKADDR)&addr_local, sizeof(addr_local)) == SOCKET_ERROR)
+		//{
+		//	std::cout << "绑定失败" << std::endl;
+		//	//return;
+		//}
+		//FD_ZERO(&fdsock); // 先清空
+		//FD_SET(sock, &fdsock);
+		//int nret = ::select(0, &fdsock, NULL, NULL, &timeout);//select()返回值：有未决I/O的套接字句柄的个数
+		//if (nret > 0)
+		//{
+		//	if (FD_ISSET(sock, &fdsock))//若该套接字可读
+		//	{
+		//		int nrecv = ::recvfrom(sock, (char*)cmd, sizeof(CMD), 0, (LPSOCKADDR)&addr_far, &alen);
+		//		if (nrecv == 24)
+		//		if (ntohl(cmd->synWord) == 0x05CCF0FF)
+		//		{
+		//			std::cout << "上电：第" << cmdCounter << "条指令发送成功！" << std::endl;
+		//			::closesocket(sock);
+		//			return true;
+		//		}
+		//	}
+		//}
+		//count++;
+		//if (count >= maxSend)
+		//{
+		//	std::cout << "上电：第" << cmdCounter << "条指令发送失败！" << std::endl;
+		//	::closesocket(sock);
+		//	return false;
+		//}
+		//::closesocket(sock);
 	}
 }
 
@@ -438,49 +482,5 @@ bool Instruction::DisableClockManagement1()
 		return false;
 
 	return true;
-}
-
-bool Instruction::PowerOff()
-{
-	CMD *cmd = new CMD;
-	cmd->synWord = htonl(0x03CCF0FF);
-	cmd->dataLength = htonl(0x00000002);
-	cmd->counter = htons(cmdCounter);
-	cmd->form = htons(0x0200);
-	cmd->timeStamp = htons(0x0000);
-	cmd->checkSum = htons(0x0000);
-	cmd->data = htonll(0x0000000200000000);
-
-	int alen = sizeof(addr_target);
-	fd_set fdsock;//套接字集合
-	struct timeval timeout;
-	int count{ 0 }; //发送次数计数
-	timeout.tv_sec = maxWaitS; // 等待时间（s）
-	timeout.tv_usec = maxWaitUS; // 等待时间（μs）
-	while (1)
-	{
-		::sendto(sock, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_target, sizeof(addr_target));
-		cmdCounter++;
-		FD_ZERO(&fdsock); // 先清空
-		FD_SET(sock, &fdsock);
-		int nret = ::select(0, &fdsock, NULL, NULL, &timeout);//select()返回值：有未决I/O的套接字句柄的个数
-		if (nret > 0)
-		{
-			if (FD_ISSET(sock, &fdsock))//若该套接字可读
-			{
-				int nrecv = ::recvfrom(sock, (char*)cmd, sizeof(CMD), 0, (LPSOCKADDR)&addr_target, &alen);
-				if (nrecv == 24)
-					//if (ntohl(cmd->synWord) == 0x05CCF0FF && ntohs(cmd->form) == 0x && ntohll(cmd->data) == 0x )
-				{
-					return true;
-				}
-			}
-		}
-		count++;
-		if (count >= maxSend)
-		{
-			return false;
-		}
-	}
 }
 

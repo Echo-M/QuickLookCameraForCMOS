@@ -25,6 +25,7 @@ InputCMOS::~InputCMOS()
 	::closesocket(sock);
 }
 
+#include <QFile>
 void InputCMOS::process()
 {
 	UCHAR *recvbuf = new UCHAR[NUMOFRECVBUF];//接收UDP数据
@@ -35,7 +36,11 @@ void InputCMOS::process()
 	FD_ZERO(&fdsock); // 先清空
 	FD_SET(sock, &fdsock);
 	struct timeval timeout;
-	timeout.tv_sec = 100;
+	timeout.tv_sec = 2;
+
+	unsigned char* buf = new unsigned char[1024 * 1024 * 512];
+	int cnt = 0;
+
 	while (m_processing)
 	{
 		fd_set fdread = fdsock;//fdsock_img的copy
@@ -60,9 +65,17 @@ void InputCMOS::process()
 				if (FD_ISSET(sock, &fdread))//若该套接字可读
 				{
 					int nrecv = ::recvfrom(sock, (char*)recvbuf, NUMOFRECVBUF, 0, (LPSOCKADDR)&addr_far, &alen);
-
 					if (nrecv > 0)
 					{
+						//memcpy(buf + cnt, recvbuf, nrecv);
+						//cnt += nrecv;
+
+						//if (cnt > 500 * 1024 * 1024)
+						//{
+						//	static int fnum = 0;
+						//	//QFile f(QObject::tr("C:/recv_%1.dat").arg(++fnum)); f.open(QIODevice::WriteOnly); f.write((char*)buf, cnt); f.close();
+						//}
+
 						if (m_outputBuffer[0].second)
 							m_outputBuffer[0].second->push_back(recvbuf, nrecv);//将接受的数据放入输出缓冲区
 						//qDebug() << ("\n收到%d个字节", nrecv);

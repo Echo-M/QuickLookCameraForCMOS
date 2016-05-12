@@ -204,5 +204,6 @@
     <None Include="qquicklookcamera_zh.ts">
       <Filter>Translation Files</Filter>
     </None>
+    <None Include="qquicklookcamera_zh.qm" />
   </ItemGroup>
 </Project>
