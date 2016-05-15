@@ -206,37 +206,37 @@ void QquickLookCamera::saveFlie()
 void QquickLookCamera::Initial()
 {
 	instructionE->Initial();
-	instruction1->Initial();
-	instruction2->Initial();
-	instruction3->Initial();
+	//instruction1->Initial();
+	/*instruction2->Initial();
+	instruction3->Initial();*/
 }
 void QquickLookCamera::Start()
 {
 	instructionE->Start();
-	instruction1->Start();
-	instruction2->Start();
-	instruction3->Start();
+	//instruction1->Start();
+	/*instruction2->Start();
+	instruction3->Start();*/
 }
 void QquickLookCamera::Stop()
 {
-	instructionE->Stop();
-	instruction1->Stop();
+	//instructionE->Stop();
+	/*instruction1->Stop();
 	instruction2->Stop();
-	instruction3->Stop();
+	instruction3->Stop();*/
 }
 void QquickLookCamera::setExposureRate(int _rate)
 {
-	instructionE->SetExposureRate(_rate);
-	instruction1->SetExposureRate(_rate);
+	//instructionE->SetExposureRate(_rate);
+	/*instruction1->SetExposureRate(_rate);
 	instruction2->SetExposureRate(_rate);
-	instruction3->SetExposureRate(_rate);
+	instruction3->SetExposureRate(_rate);*/
 }
 void QquickLookCamera::setFrameRate(int _rate)
 {
-	instructionE->SetFrameRate(_rate);
-	instruction1->SetFrameRate(_rate);
+	//instructionE->SetFrameRate(_rate);
+	/*instruction1->SetFrameRate(_rate);
 	instruction2->SetFrameRate(_rate);
-	instruction3->SetFrameRate(_rate);
+	instruction3->SetFrameRate(_rate);*/
 
 	QString temp = QString::number(frameRate);//Ö¡ÂÊ
 	frameRateLabel->setText(temp);

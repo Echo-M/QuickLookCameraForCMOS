@@ -1,5 +1,7 @@
-#pragma once
-#include ".\\QData\\initsock.h"
+#ifndef _COMMAND_HPP_
+#define _COMMAND_HPP_
+#include "../QData/initsock.h"
+
 
 #pragma pack (push)
 #pragma pack (1)
@@ -31,12 +33,9 @@ public:
 	bool SetCmosId(CMOSID id);
 	bool Initial();
 	bool Start();
-	bool Stop();
-	bool SetExposureRate(int _rate){ return true; }
-	bool SetFrameRate(int _rate){ return true; }
 
 protected:
-	bool OpenSystem();
+	bool Open();
 	bool Reset();
 	bool PowerUp();
 	bool EnableClockManagement1();
@@ -49,7 +48,6 @@ protected:
 	bool SoftPowerDown();
 	bool DisableClockManagement2();
 	bool DisableClockManagement1();
-	bool PowerOff();
 	
 protected:
 	bool buildCmdReg(CMD* _cmd, int _addr, int _data);
@@ -57,10 +55,9 @@ protected:
 
 protected:
 	CInitSock c;//Winsock库的装入和释放
-	SOCKET sock;//接收图像数据套接字
 	sockaddr_in addr_local;//本地地址
 	sockaddr_in addr_target;//远程地址
-
+	sockaddr_in addr_far;//远程地址
 
 private:
 	CMOSID cmosId;
@@ -69,3 +66,5 @@ private:
 	const int maxWaitS; //允许的最长等待时间s
 	const int maxWaitUS; //允许的最长等待时间us
 };
+
+#endif
