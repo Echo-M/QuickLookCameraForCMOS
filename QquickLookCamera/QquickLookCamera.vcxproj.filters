@@ -118,7 +118,13 @@
     <ClCompile Include="GeneratedFiles\Release\moc_myclass.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="instruct\Instruction.cpp">
+    <ClCompile Include="QData\Instruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QData\InstructionProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QData\semaphore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -191,7 +197,13 @@
     <ClInclude Include="SaveFile\SaveToBmpGray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="instruct\Instruction.h">
+    <ClInclude Include="QData\Instruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QData\InstructionProcess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QData\semaphore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

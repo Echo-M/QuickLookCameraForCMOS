@@ -175,7 +175,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="instruct\Instruction.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="myclass.cpp" />
     <ClCompile Include="QData\ArrayCameraDataItem.cpp" />
@@ -185,6 +184,9 @@
     <ClCompile Include="QData\IDataItem.cpp" />
     <ClCompile Include="QData\IDataProcessUnit.cpp" />
     <ClCompile Include="QData\InputCMOS.cpp" />
+    <ClCompile Include="QData\Instruction.cpp" />
+    <ClCompile Include="QData\InstructionProcess.cpp" />
+    <ClCompile Include="QData\semaphore.cpp" />
     <ClCompile Include="qquicklookcamera.cpp" />
     <ClCompile Include="QView\ImageMagnifierItem.cpp" />
     <ClCompile Include="QView\IWindowItem.cpp" />
@@ -239,7 +241,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_qquicklookcamera.h" />
-    <ClInclude Include="instruct\Instruction.h" />
+    <ClInclude Include="QData\Instruction.h" />
+    <ClInclude Include="QData\InstructionProcess.h" />
+    <ClInclude Include="QData\semaphore.h" />
     <ClInclude Include="SaveFile\SaveToBmp24.h" />
     <ClInclude Include="SaveFile\SaveToBmpGray.h" />
     <ClInclude Include="SaveFile\SaveToFile.h" />

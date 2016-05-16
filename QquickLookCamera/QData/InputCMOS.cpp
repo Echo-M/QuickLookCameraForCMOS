@@ -40,8 +40,8 @@ void InputCMOS::process()
 	struct timeval timeout;
 	timeout.tv_sec = 2;
 
-	unsigned char* buf = new unsigned char[512 * 1024 * 1024];
-	long long cnt = 0;
+	//unsigned char* buf = new unsigned char[512 * 1024 * 1024];
+	//long long cnt = 0;
 
 	while (m_processing)
 	{
@@ -69,7 +69,7 @@ void InputCMOS::process()
 					int nrecv = ::recvfrom(sock, (char*)recvbuf, NUMOFRECVBUF, 0, (LPSOCKADDR)&addr_far, &alen);
 					if (nrecv > 0)
 					{
-						memcpy(buf + cnt, recvbuf, nrecv);
+		/*				memcpy(buf + cnt, recvbuf, nrecv);
 						cnt += nrecv;
 
 						if (cnt > 500 * 1024 * 1024)
@@ -77,7 +77,7 @@ void InputCMOS::process()
 							cnt = 0;
 							static int fnum = 0;
 							QFile f(QObject::tr("C:/recv_%1.dat").arg(++fnum)); f.open(QIODevice::WriteOnly); f.write((char*)buf, 500 * 1024 * 1024); f.close();
-						}
+						}*/
 
 						if (m_outputBuffer[0].second)
 							m_outputBuffer[0].second->push_back(recvbuf, nrecv);//将接受的数据放入输出缓冲区

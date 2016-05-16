@@ -19,7 +19,7 @@ QquickLookCamera::QquickLookCamera(QWidget *parent)
 	setWindowIcon(QIcon("realtime.png"));
 
 	showWidget = new MyClass(this); 
-	showWidget->setMinimumSize(400, 400);
+	showWidget->setMinimumSize(500, 450);
 	setCentralWidget(showWidget); 
 	
 	ctrlFrame = new QFrame;
@@ -30,17 +30,6 @@ QquickLookCamera::QquickLookCamera(QWidget *parent)
 	ctrlFrameDock->setWidget(ctrlFrame);
 	addDockWidget(Qt::LeftDockWidgetArea, ctrlFrameDock);
 
-	instructionE = new Instruction(4567, inet_addr("192.168.1.1"), 3955, inet_addr("192.168.1.2"));
-	instructionE->SetCmosId(Instruction::CMOSE);
-	instruction1 = new Instruction(4567, inet_addr("192.168.1.1"), 3955, inet_addr("192.168.1.2"));
-	instruction1->SetCmosId(Instruction::CMOS1);
-	instruction2 = new Instruction(4567, inet_addr("192.168.1.1"), 3955, inet_addr("192.168.1.2"));
-	instruction2->SetCmosId(Instruction::CMOS2);
-	instruction3 = new Instruction(4567, inet_addr("192.168.1.1"), 3955, inet_addr("192.168.1.2"));
-	instruction3->SetCmosId(Instruction::CMOS3);
-
-	createActions();   //创建动作
-	createMenus();     //创建菜单
 	cerateStatus();    //创建状态栏
 }
 
@@ -51,34 +40,34 @@ QquickLookCamera::~QquickLookCamera()
 void QquickLookCamera::createControlFrame()
 {
 	//曝光时间
-	QLabel *exposureRateLabel = new QLabel(tr("exposure rate:"));
-	exposureRateLineEdit = new QLineEdit;
-	exposureRateLineEdit->setPlaceholderText(tr("0000"));
-	connect(exposureRateLineEdit, &QLineEdit::textChanged, this, [this]()
+	QLabel *expoTimeLabel = new QLabel(tr("exposure rate:"));
+	expoTimeLineEdit = new QLineEdit;
+	expoTimeLineEdit->setPlaceholderText(tr("0000"));
+	connect(expoTimeLineEdit, &QLineEdit::textChanged, this, [this]()
 	{
 		bool ok;
-		QString valueStr = exposureRateLineEdit->text();
-		exposureRate = valueStr.toInt(&ok);
+		QString valueStr = expoTimeLineEdit->text();
+		expoTime = valueStr.toInt(&ok);
 	});
-	QPushButton *exposureRateOKButton = new QPushButton(tr("OK"));
-	connect(exposureRateOKButton, &QPushButton::clicked, this, [this]()
+	QPushButton *expoTimeOKButton = new QPushButton(tr("OK"));
+	connect(expoTimeOKButton, &QPushButton::clicked, this, [this]()
 	{
-		setExposureRate(exposureRate);
+		setExpoTime(expoTime);
 	});
 	//帧率
-	QLabel *frameRateLabel = new QLabel(tr("frame rate:"));                   //dg为小数，整数部分为5位，小数部分为7位
-	frameRateLineEdit = new QLineEdit;
-	frameRateLineEdit->setPlaceholderText(tr("0000"));
-	connect(frameRateLineEdit, &QLineEdit::textChanged, this, [this]()
+	QLabel *frRateLabel = new QLabel(tr("frame rate:"));                   //dg为小数，整数部分为5位，小数部分为7位
+	frRateLineEdit = new QLineEdit;
+	frRateLineEdit->setPlaceholderText(tr("0000"));
+	connect(frRateLineEdit, &QLineEdit::textChanged, this, [this]()
 	{
 		bool ok;
-		QString valueStr = frameRateLineEdit->text();
-		frameRate = valueStr.toInt(&ok);
+		QString valueStr = frRateLineEdit->text();
+		frRate = valueStr.toInt(&ok);
 	});
-	QPushButton *frameRateOKButton = new QPushButton(tr("OK"));
-	connect(frameRateOKButton, &QPushButton::clicked, this, [this]()
+	QPushButton *frRateOKButton = new QPushButton(tr("OK"));
+	connect(frRateOKButton, &QPushButton::clicked, this, [this]()
 	{
-		setFrameRate(frameRate);
+		setFrRate(frRate);
 	});
 
 	QGridLayout *cameraParaLayout = new QGridLayout;
@@ -88,21 +77,19 @@ void QquickLookCamera::createControlFrame()
 	//cameraParaLayout->setSpacing(15);                      //设置间距
 	//cameraParaLayout->setMargin(4);
 
-	cameraParaLayout->addWidget(exposureRateLabel, 0, 0);
-	cameraParaLayout->addWidget(exposureRateLineEdit, 1, 0);
-	cameraParaLayout->addWidget(exposureRateOKButton, 2, 0);
-	cameraParaLayout->addWidget(frameRateLabel, 3, 0);
-	cameraParaLayout->addWidget(frameRateLineEdit, 4, 0);
-	cameraParaLayout->addWidget(frameRateOKButton, 5, 0);
+	cameraParaLayout->addWidget(expoTimeLabel, 0, 0);
+	cameraParaLayout->addWidget(expoTimeLineEdit, 1, 0);
+	cameraParaLayout->addWidget(expoTimeOKButton, 2, 0);
+	cameraParaLayout->addWidget(frRateLabel, 3, 0);
+	cameraParaLayout->addWidget(frRateLineEdit, 4, 0);
+	cameraParaLayout->addWidget(frRateOKButton, 5, 0);
 
 	QGroupBox *cameraPara = new QGroupBox(tr("camera parameter"));
 	cameraPara->setContentsMargins(20, 20, 20, 20);
 	cameraPara->setLayout(cameraParaLayout);
 
-	QPushButton *initButton = new QPushButton(tr("Initial"));
-	connect(initButton, &QPushButton::clicked, this, &QquickLookCamera::Initial);
-	QPushButton *startButton = new QPushButton(tr("Start"));
-	connect(startButton, &QPushButton::clicked, this, &QquickLookCamera::Start);
+	QPushButton *startButton = new QPushButton(tr("StartUpload"));
+	connect(startButton, &QPushButton::clicked, this, &QquickLookCamera::AECRun);
 	QPushButton *stopButton = new QPushButton(tr("Stop"));
 	connect(stopButton, &QPushButton::clicked, this, &QquickLookCamera::Stop);
 
@@ -110,87 +97,35 @@ void QquickLookCamera::createControlFrame()
 	QGridLayout *frameLayout = new QGridLayout;
 	frameLayout->setMargin(5);
 	frameLayout->setSpacing(10);
-	frameLayout->addWidget(initButton, 0, 0);
-	frameLayout->addWidget(startButton, 1, 0);
-	frameLayout->addWidget(stopButton, 2, 0);
-	frameLayout->addWidget(cameraPara, 3, 0);
+	frameLayout->addWidget(startButton, 0, 0);
+	frameLayout->addWidget(stopButton, 1, 0);
+	frameLayout->addWidget(cameraPara, 2, 0);
 	ctrlFrame->setLayout(frameLayout);
-}
-
-void QquickLookCamera::createActions()
-{
-	openFileAction = new QAction(QIcon("open.png"), tr("open"), this);
-	openFileAction->setShortcut(tr("Ctrl+O"));
-	openFileAction->setStatusTip(tr("open files"));
-	connect(openFileAction, &QAction::triggered, this, &QquickLookCamera::OpenFile);
-	
-	saveAction = new QAction(tr("save"), this);
-	saveAction->setShortcut(tr("Ctrl+S"));
-	saveAction->setStatusTip(tr("save current 4 image"));
-	connect(saveAction, &QAction::triggered, this, &QquickLookCamera::saveFlie); 
-	
-	exitAction = new QAction(tr("exit"), this);
-	exitAction->setShortcut(tr("Ctrl+Q"));
-	exitAction->setStatusTip(tr("quit programmer"));
-	connect(exitAction, &QAction::triggered, this, &QquickLookCamera::close);
-
-	initAction = new QAction(tr("initial"), this);
-	initAction->setStatusTip(tr("initial camera..."));
-	connect(initAction, &QAction::triggered, this, &QquickLookCamera::Initial);
-
-	startAction = new QAction(tr("start"), this);
-	startAction->setStatusTip(tr("start upload image data..."));
-	connect(startAction, &QAction::triggered, this, &QquickLookCamera::Start);
-
-	stopAction = new QAction(tr("stop"), this);
-	stopAction->setStatusTip(tr("start upload image data..."));
-	connect(stopAction, &QAction::triggered, this, &QquickLookCamera::Stop);
-
-	setExposureRateAction = new QAction(tr("set exposure rate"), this);
-	setExposureRateAction->setStatusTip(tr("set exposure rate"));
-	connect(setExposureRateAction, &QAction::triggered, this, &QquickLookCamera::setExposureRate);
-
-	setFrameRateAction = new QAction(tr("set frame rate"), this);
-	setFrameRateAction->setStatusTip(tr("set frame rate"));
-	connect(setFrameRateAction, &QAction::triggered, this, &QquickLookCamera::setFrameRate);
-
-	aboutAction = new QAction(tr("about"), this);
-	connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAboutMSg()));
-}
-
-void QquickLookCamera::createMenus()
-{
-	//文件菜单
-	fileMenu = menuBar()->addMenu(tr("file"));
-	fileMenu->addAction(openFileAction);
-	fileMenu->addAction(saveAction);
-	fileMenu->addAction(exitAction);
-
-	dataControlMenu = menuBar()->addMenu(tr("data control"));
-	dataControlMenu->addAction(initAction);
-	dataControlMenu->addAction(startAction);
-	dataControlMenu->addAction(stopAction);
-
-	cameraControlMenu = menuBar()->addMenu(tr("camera control"));
-	cameraControlMenu->addAction(setExposureRateAction);
-	cameraControlMenu->addAction(setFrameRateAction);
-
-	helpMenu = menuBar()->addMenu(tr("help"));
-	helpMenu->addAction(aboutAction);
 }
 
 void QquickLookCamera::cerateStatus()
 {
-	statusLabel = new QLabel;
-	statusLabel->setText(tr("frame rate:"));
-	statusLabel->setFixedWidth(50);
-	statusBar()->addPermanentWidget(statusLabel);
+	frRateLabel = new QLabel;
+	QString tempfr = tr(" | frame rate: ");
+	tempfr += QString::number(frRate);
+	tempfr += tr(" fps");
+	frRateLabel->setText(tempfr);
+	frRateLabel->setFixedWidth(150);
+	statusBar()->addPermanentWidget(frRateLabel);
 
-	frameRateLabel = new QLabel;
-	QString temp = QString::number(exposureRate);//帧率
-	frameRateLabel->setText(temp);
-	frameRateLabel->setFixedWidth(100);
-	statusBar()->addPermanentWidget(frameRateLabel);
+	frLengthLabel = new QLabel;
+	QString tempfl = tr(" | frame length: ");
+	tempfl += QString::number(frLength);
+	frLengthLabel->setText(tempfl);
+	frLengthLabel->setFixedWidth(150);
+	statusBar()->addPermanentWidget(frLengthLabel);
+
+	expoTimeLabel = new QLabel;
+	QString tempet = tr(" | exposure time: ");
+	tempet += QString::number(expoTime);
+	expoTimeLabel->setText(tempet);
+	expoTimeLabel->setFixedWidth(150);
+	statusBar()->addPermanentWidget(expoTimeLabel);
 }
 
 void QquickLookCamera::OpenFile()
@@ -203,42 +138,79 @@ void QquickLookCamera::saveFlie()
 	showWidget->setSaveFile();
 }
 
-void QquickLookCamera::Initial()
+void QquickLookCamera::AECRun()
 {
-	instructionE->Initial();
-	//instruction1->Initial();
-	/*instruction2->Initial();
-	instruction3->Initial();*/
+	InstructionProcess instruct(Instruction::CMOSE);
+	instruct.AECRun();
+	uploadFlag = true;
+	QMessageBox::information(this, tr("Tips"), tr("Data is alreay upload!"));
 }
-void QquickLookCamera::Start()
+
+void QquickLookCamera::setExpoTime(long long _time)
 {
-	instructionE->Start();
-	//instruction1->Start();
-	/*instruction2->Start();
-	instruction3->Start();*/
+	if (!uploadFlag)
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
+		return;
+	}
+	if (expoTime >= frLength*0.8)
+		expoTime = frLength*0.8;
+	else
+		expoTime = _time;
+
+	InstructionProcess instruct(Instruction::CMOSE);
+	instruct.ManualRun(expoTime);
+
+	QString tempet = tr(" | exposure time: ");
+	tempet += QString::number(expoTime);
+	expoTimeLabel->setText(tempet);
+	expoTimeLabel->update();
+	
+	uploadFlag = true;
+	QMessageBox::information(this, tr("Tips"), tr("Data is alreay upload!"));
 }
+void QquickLookCamera::setFrRate(int _rate)
+{
+	if (!uploadFlag)
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
+		return;
+	}
+	frRate = _rate;
+	frLength = 180000 / frRate;
+
+	InstructionProcess instruct(Instruction::CMOSE);
+	instruct.SetFPS(frRate);
+
+	QString tempfr = tr(" | frame rate: ");
+	tempfr += QString::number(frRate);
+	tempfr += tr(" fps");
+	frRateLabel->setText(tempfr);
+	frRateLabel->update();
+
+	QString tempfl = tr(" | frame length: ");
+	tempfl += QString::number(frLength);
+	frLengthLabel->setText(tempfl);
+	frLengthLabel->update();
+
+	uploadFlag = true;
+	QMessageBox::information(this, tr("Tips"), tr("Data is alreay upload!"));
+}
+
 void QquickLookCamera::Stop()
 {
-	//instructionE->Stop();
-	/*instruction1->Stop();
-	instruction2->Stop();
-	instruction3->Stop();*/
-}
-void QquickLookCamera::setExposureRate(int _rate)
-{
-	//instructionE->SetExposureRate(_rate);
-	/*instruction1->SetExposureRate(_rate);
-	instruction2->SetExposureRate(_rate);
-	instruction3->SetExposureRate(_rate);*/
-}
-void QquickLookCamera::setFrameRate(int _rate)
-{
-	//instructionE->SetFrameRate(_rate);
-	/*instruction1->SetFrameRate(_rate);
-	instruction2->SetFrameRate(_rate);
-	instruction3->SetFrameRate(_rate);*/
+	InstructionProcess instruct(Instruction::CMOSE);
+	instruct.Stop();
+	instruct.Stop();
+	instruct.Stop();
+	instruct.Stop();
+	instruct.Stop();
+	instruct.Stop();
+	instruct.Stop();
+	instruct.Stop();
+	instruct.Stop();
+	instruct.Stop();
 
-	QString temp = QString::number(frameRate);//帧率
-	frameRateLabel->setText(temp);
-	frameRateLabel->update();
+	uploadFlag = false;
+	QMessageBox::information(this, tr("Tips"), tr("Data is alreay stop uploading!"));
 }

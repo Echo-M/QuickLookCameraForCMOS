@@ -2,10 +2,9 @@
 #define QQUICKLOOKCAMERA_H
 
 #include <QMainWindow>
-
 #include "ui_qquicklookcamera.h"
 #include "myclass.h"
-#include "./instruct/Instruction.h"
+#include "../QData/InstructionProcess.h"
 class QLabel;
 
 //该类提供整个上位机的主窗口
@@ -18,64 +17,33 @@ public:
 
 	//创建相机控制子窗口
 	void createControlFrame();
-	//创建动作
-	void createActions();
-	//创建菜单栏
-	void createMenus();
-	// void createToolBars();
 	//创建状态栏
 	void cerateStatus();
 
 public slots :
 	void OpenFile();
 	void saveFlie();
-
-	void Initial();
-	void Start();
+	void AECRun();
 	void Stop();
-
-	void setExposureRate(int _rate);
-	void setFrameRate(int _rate);
+	void setExpoTime(long long _time);
+	void setFrRate(int _rate);
 
 private: 
 	//Ui::QquickLookCameraClass ui; //不使用UI，使用纯代码的方式添加控件
 
 	QString filename;
 	MyClass *showWidget;
-	Instruction *instructionE;
-	Instruction *instruction1;
-	Instruction *instruction2;
-	Instruction *instruction3;
 	QFrame *ctrlFrame;
 	QDockWidget *ctrlFrameDock;
 
 private:
-	//菜单栏
-	QMenu *fileMenu;//文件（打开、保存、退出）
-	QMenu *dataControlMenu;//数据控制（初始化、上传、停止）
-	QMenu *cameraControlMenu;//相机控制（曝光率、帧率）
-	QMenu *motorControlMenu;//电机控制
-	QMenu *helpMenu;
+	QLineEdit *expoTimeLineEdit;
+	QLineEdit *frRateLineEdit;
 
-	//菜单栏对应动作
-	QAction *openFileAction;
-	QAction *saveAction;
-	QAction *exitAction;
-
-	QAction *initAction;
-	QAction *startAction;
-	QAction *stopAction;
-
-	QAction *setExposureRateAction;
-	QAction *setFrameRateAction;
-
-	QAction *aboutAction;
-
-	QLineEdit *exposureRateLineEdit;
-	QLineEdit *frameRateLineEdit;
-
-	int exposureRate{ 0 };
-	int frameRate{ 0 };
+	long long expoTime{ 8000 };
+	int frRate{ 18 };
+	long long frLength{ 10000 };
+	bool uploadFlag{ false };//数据上传标志
 
 	//工具栏
 	/*QToolBar *fileTool;
@@ -85,9 +53,9 @@ private:
 	QToolBar *doToolBar;*/
 
 	//状态栏
-	QLabel  *statusLabel;
-	QLabel  *frameRateLabel;
-	
+	QLabel  *expoTimeLabel;
+	QLabel  *frRateLabel;
+	QLabel  *frLengthLabel;	
 };
 
 #endif // QQUICKLOOKCAMERA_H

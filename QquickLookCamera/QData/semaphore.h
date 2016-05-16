@@ -3,11 +3,11 @@
 #include <mutex>
 #include <condition_variable>
 
-
 class semaphore 
 {
 public:
-	semaphore(int value = 1);
+	semaphore(int value);
+	~semaphore();
 	void wait()
 	{
 		std::unique_lock<std::mutex> lock{ mutex };
@@ -33,5 +33,7 @@ private:
 	std::condition_variable condition;
 };
 
+extern semaphore sendSemaphore;
+extern semaphore recvSemaphore;
 
 

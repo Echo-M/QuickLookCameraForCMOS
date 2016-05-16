@@ -108,8 +108,8 @@ void ArrayCameraDataItem::process()
 
 //只要丢包就丢弃
 #include <QFile>
-unsigned char* buf0 = new unsigned char[512 * 1024 * 1024];
-long long cnt = 0;
+//unsigned char* buf0 = new unsigned char[512 * 1024 * 1024];
+//long long cnt = 0;
 void ArrayCameraDataItem::storePayloadData(const unsigned char *buf)
 {
 	//面阵相机包格式处理流程：
@@ -162,7 +162,7 @@ void ArrayCameraDataItem::storePayloadData(const unsigned char *buf)
 				buffer[i] = buf[imgLineSize - i + headerSize];  //buf->m_dualImageBuffer[0]
 			}
 			
-			memcpy(buf0 + cnt, pkgHeader, headerSize);
+			/*memcpy(buf0 + cnt, pkgHeader, headerSize);
 			memcpy(buf0 + cnt + headerSize, buffer, lineSize);
 			cnt += lineSize;
 
@@ -171,7 +171,7 @@ void ArrayCameraDataItem::storePayloadData(const unsigned char *buf)
 				cnt = 0;
 				static int fnum = 0;
 				QFile f(QObject::tr("C:/temp_%1.dat").arg(++fnum)); f.open(QIODevice::WriteOnly); f.write((char*)buf0, 500 * 1024 * 1024); f.close();
-			}
+			}*/
 		}
 
 		if (curLineCnt == m_features->linesPerFrame - 1)//一帧的最后一行，将缓冲区[0]放入[1]中
