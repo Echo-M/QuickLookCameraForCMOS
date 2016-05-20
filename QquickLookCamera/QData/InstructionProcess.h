@@ -6,9 +6,11 @@ public:
 	InstructionProcess(Instruction::CMOSID _cmosId);
 	~InstructionProcess();
 	void AECRun();
-	void ManualRun(long long _expoTime);
+	void setExpoTime(unsigned int _expoTime);
 	void SetFPS(int _fps);
 	void Stop();
+	void SetAGCG(float _total);
+	void SetDG(float _dg);
 	//设置：发送数据时——本地端口
 	void setPortLocalSend(USHORT tmp){ port_local_send = tmp; }
 	//设置：接收数据时——本地端口

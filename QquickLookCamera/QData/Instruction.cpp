@@ -42,7 +42,7 @@ Instruction::~Instruction()
 	::closesocket(sock_recv);
 	stopRecv();
 	stopSendSetFPS();
-	stopSendManualRun();
+	stopSendsetExpoTime();
 	stopSendAECRun();
 }
 
@@ -86,7 +86,8 @@ bool Instruction::buildCmdReg(int _addr, int _data)
 
 void Instruction::sendCmdReg(int _addr, int _data)
 {
-	sendSemaphore.wait();
+	if (SENDFLAG) sendSemaphore.wait();
+	SENDFLAG = true;
 
 	if (!buildCmdReg(_addr, _data))
 	{
@@ -109,17 +110,19 @@ void Instruction::AECRun()
 	sendCmdReg(160, 0x0011); //Enable AEC
 	EnableSequencer();
 }
-void Instruction::ManualExposure(long long _expoTime)
+void Instruction::ManualExposure(unsigned int _expoTime)
 {
-	if (_expoTime >= m_frLength*0.8)
-		_expoTime = m_frLength*0.8;
 	DisableSequencer();
 	SoftPowerDown();
+
+	if (_expoTime >= m_frLength)
+		_expoTime = m_frLength;
+	m_frExpoTime = _expoTime;
+
 	sendCmdReg(160, 0x0010);//设为手动曝光
 	sendCmdReg(161, 0x60B8);
-	sendCmdReg(204, 0x01e3);//AG&&CG
-	sendCmdReg(205, 0x0080);//DG
-	sendCmdReg(201, _expoTime);//设置曝光时间
+	sendCmdReg(201, m_frExpoTime);//设置曝光时间
+
 	SoftPowerUp();
 	EnableSequencer();
 }
@@ -128,16 +131,74 @@ void Instruction::SetFPS(int _fps)
 {
 	DisableSequencer();
 	SoftPowerDown();
+
 	m_FPS = _fps;
 	m_frLength = 180000/_fps;
-	sendCmdReg(200, m_frLength);//设置曝光时间
+	sendCmdReg(200, m_frLength);//设置帧率
+
 	SoftPowerUp();
 	EnableSequencer();
 }
 
-void Instruction::Stop()
+void Instruction::SetAGCG(float _gainTotal)
 {
-	PowerDown();
+	DisableSequencer();
+	SoftPowerDown();
+
+	if (_gainTotal == 1.00)
+		m_ag_cg = 0x01E2;
+	else
+	if (_gainTotal == 1.14)
+		m_ag_cg = 0x00E2;
+	else
+	if (_gainTotal == 1.33)
+		m_ag_cg = 0x0062;
+	else
+	if (_gainTotal == 1.60)
+		m_ag_cg = 0x00A2;
+	else
+	if (_gainTotal == 2.00)
+		m_ag_cg = 0x0022;
+	else
+	if (_gainTotal == 2.29)
+		m_ag_cg = 0x00E1;
+	else
+	if (_gainTotal == 2.67)
+		m_ag_cg = 0x0061;
+	else
+	if (_gainTotal == 3.20)
+		m_ag_cg = 0x00A1;
+	else
+	if (_gainTotal == 4.00)
+		m_ag_cg = 0x0021;
+	else
+	if (_gainTotal == 5.33)
+		m_ag_cg = 0x00C1;
+	else
+	if (_gainTotal == 8.00)
+		m_ag_cg = 0x0041;
+
+	sendCmdReg(160, 0x0010);//设为手动曝光
+	sendCmdReg(161, 0x60B8);
+	sendCmdReg(204, m_ag_cg);//AG&&CG
+
+	SoftPowerUp();
+	EnableSequencer();
+}
+
+void Instruction::SetDG(float _dg)
+{
+	DisableSequencer();
+	SoftPowerDown();
+	
+	m_dg = (int)_dg * 128 + (_dg - (int)_dg) * 100;
+
+	sendCmdReg(160, 0x0010);//设为手动曝光
+	sendCmdReg(161, 0x60B8);
+	sendCmdReg(205, m_dg);//DG
+
+	SoftPowerUp();
+	EnableSequencer();
 }
 
 void Instruction::PowerDown()
@@ -158,7 +219,8 @@ void Instruction::PowerDown()
 
 void Instruction::PowerUp()
 {
-	sendSemaphore.wait();
+	if (SENDFLAG) sendSemaphore.wait();
+	SENDFLAG = true;
 
 	cmd->synWord = htonl(0x03CCF0FF);
 	cmd->dataLength = htonl(0x00000002);
@@ -271,8 +333,8 @@ void Instruction::receive()
 	int alen = sizeof(addr);
 
 	struct timeval timeout;
-	timeout.tv_sec = 2;
-	timeout.tv_usec = 0;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 10000;
 
 	while (m_recving)
 	{

@@ -6,6 +6,7 @@
 #include "myclass.h"
 #include "../QData/InstructionProcess.h"
 class QLabel;
+class QComboBox;
 
 //该类提供整个上位机的主窗口
 class QquickLookCamera : public QMainWindow
@@ -25,8 +26,11 @@ public slots :
 	void saveFlie();
 	void AECRun();
 	void Stop();
-	void setExpoTime(long long _time);
+	void setExpoTime(unsigned int _time);
 	void setFrRate(int _rate);
+	void setAGCG(float _totalGain);
+	void setDG(float _dg);
+	void AGCGBoxChanged();
 
 private: 
 	//Ui::QquickLookCameraClass ui; //不使用UI，使用纯代码的方式添加控件
@@ -39,10 +43,15 @@ private:
 private:
 	QLineEdit *expoTimeLineEdit;
 	QLineEdit *frRateLineEdit;
+	QLineEdit *DGLineEdit;
+	//QLineEdit *AGCGLineEdit;
+	QComboBox *AGCGComboBox;
 
-	long long expoTime{ 8000 };
+	unsigned int expoTime{ 2000 };
 	int frRate{ 18 };
-	long long frLength{ 10000 };
+	unsigned int frLength{ 10000 };
+	float dg{1.0};
+	float ag_cg{1.00};
 	bool uploadFlag{ false };//数据上传标志
 
 	//工具栏
@@ -56,6 +65,7 @@ private:
 	QLabel  *expoTimeLabel;
 	QLabel  *frRateLabel;
 	QLabel  *frLengthLabel;	
+	QLabel  *infoLabel;
 };
 
 #endif // QQUICKLOOKCAMERA_H

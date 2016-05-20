@@ -9,7 +9,6 @@
 class ArrayCameraDataItem : public IDataItem, public IDataProcessUnit
 {
 protected:
-    bool m_dualBuffer{false}; //use dual buffer, ping-pong
     std::shared_ptr<unsigned char> m_dualImageBuffer[2]; //entire image data buffer, dual
     int m_curLineCnt; //channel 4 line counter
     long long m_newFrame{-1}; //frame counter

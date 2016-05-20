@@ -178,7 +178,9 @@ void ArrayCameraDataItem::storePayloadData(const unsigned char *buf)
 		{
 			resetCounter();  //reset and look for the first line of next img
 			if (m_dualImageBuffer[0] && m_dualImageBuffer[1])
+			{
 				memcpy(m_dualImageBuffer[1].get(), m_dualImageBuffer[0].get(), m_features->linesPerFrame*imgLineSize);
+			}
 		}
 	}
 	else

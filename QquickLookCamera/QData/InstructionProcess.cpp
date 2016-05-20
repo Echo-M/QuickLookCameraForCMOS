@@ -40,16 +40,16 @@ void InstructionProcess::SetFPS(int _fps)
 	delete instruct;
 }
 
-void InstructionProcess::ManualRun(long long _expoTime)
+void InstructionProcess::setExpoTime(unsigned int _expoTime)
 {
 	instruct = new Instruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
 	instruct->SetCmosId(m_cmosId);
-	instruct->startSendManualRun(_expoTime);
+	instruct->startSendsetExpoTime(_expoTime);
 	instruct->startRecv();
 	while (!instruct->DONEFLAG)
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	instruct->stopRecv();
-	instruct->stopSendManualRun();
+	instruct->stopSendsetExpoTime();
 	delete instruct;
 }
 
@@ -57,5 +57,31 @@ void InstructionProcess::Stop()
 {
 	instruct = new Instruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
 	instruct->Stop();
+	delete instruct;
+}
+
+void InstructionProcess::SetAGCG(float _total)
+{
+	instruct = new Instruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
+	instruct->SetCmosId(m_cmosId);
+	instruct->startSendSetAGCG(_total);
+	instruct->startRecv();
+	while (!instruct->DONEFLAG)
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	instruct->stopRecv();
+	instruct->stopSendSetAGCG();
+	delete instruct;
+}
+
+void InstructionProcess::SetDG(float _dg)
+{
+	instruct = new Instruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
+	instruct->SetCmosId(m_cmosId);
+	instruct->startSendSetDG(_dg);
+	instruct->startRecv();
+	while (!instruct->DONEFLAG)
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	instruct->stopRecv();
+	instruct->stopSendSetDG();
 	delete instruct;
 }

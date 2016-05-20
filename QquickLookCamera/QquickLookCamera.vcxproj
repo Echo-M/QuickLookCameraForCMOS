@@ -177,12 +177,14 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="myclass.cpp" />
+    <ClCompile Include="QData\ProcessedImageDataItem.cpp" />
     <ClCompile Include="QData\ArrayCameraDataItem.cpp" />
     <ClCompile Include="QData\CirQueue.cpp" />
     <ClCompile Include="QData\FeaturesOfDataItem.cpp" />
     <ClCompile Include="QData\IBuffer.cpp" />
     <ClCompile Include="QData\IDataItem.cpp" />
     <ClCompile Include="QData\IDataProcessUnit.cpp" />
+    <ClCompile Include="QData\ImageProcessing.cpp" />
     <ClCompile Include="QData\InputCMOS.cpp" />
     <ClCompile Include="QData\Instruction.cpp" />
     <ClCompile Include="QData\InstructionProcess.cpp" />
@@ -241,6 +243,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_qquicklookcamera.h" />
+    <ClInclude Include="QData\ProcessedImageDataItem.h" />
+    <ClInclude Include="QData\ImageProcessing.h" />
     <ClInclude Include="QData\Instruction.h" />
     <ClInclude Include="QData\InstructionProcess.h" />
     <ClInclude Include="QData\semaphore.h" />

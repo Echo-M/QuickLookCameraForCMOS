@@ -15,16 +15,16 @@ QquickLookCamera::QquickLookCamera(QWidget *parent)
 	: QMainWindow(parent)
 {
 	//ui.setupUi(this);
-	setWindowTitle(tr("CMOS"));
+	setWindowTitle(tr("CMOS Camera System Software"));
 	setWindowIcon(QIcon("realtime.png"));
 
 	showWidget = new MyClass(this); 
-	showWidget->setMinimumSize(500, 450);
+	showWidget->setMinimumSize(800, 600);
 	setCentralWidget(showWidget); 
 	
 	ctrlFrame = new QFrame;
 	createControlFrame(); 
-	ctrlFrameDock = new QDockWidget(tr("camea control"), this);
+	ctrlFrameDock = new QDockWidget(tr("Fuction Zone"), this);
 	ctrlFrameDock->setFixedWidth(180);
 	ctrlFrameDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
 	ctrlFrameDock->setWidget(ctrlFrame);
@@ -40,7 +40,7 @@ QquickLookCamera::~QquickLookCamera()
 void QquickLookCamera::createControlFrame()
 {
 	//曝光时间
-	QLabel *expoTimeLabel = new QLabel(tr("exposure rate:"));
+	QLabel *expoTimeLabel = new QLabel(tr("exposure time:"));
 	expoTimeLineEdit = new QLineEdit;
 	expoTimeLineEdit->setPlaceholderText(tr("0000"));
 	connect(expoTimeLineEdit, &QLineEdit::textChanged, this, [this]()
@@ -55,7 +55,7 @@ void QquickLookCamera::createControlFrame()
 		setExpoTime(expoTime);
 	});
 	//帧率
-	QLabel *frRateLabel = new QLabel(tr("frame rate:"));                   //dg为小数，整数部分为5位，小数部分为7位
+	QLabel *frRateLabel = new QLabel(tr("frame rate:")); 
 	frRateLineEdit = new QLineEdit;
 	frRateLineEdit->setPlaceholderText(tr("0000"));
 	connect(frRateLineEdit, &QLineEdit::textChanged, this, [this]()
@@ -69,6 +69,42 @@ void QquickLookCamera::createControlFrame()
 	{
 		setFrRate(frRate);
 	});
+	//DG
+	QLabel *DGLabel = new QLabel(tr("digtal gain:"));
+	DGLineEdit = new QLineEdit;
+	DGLineEdit->setPlaceholderText(tr("00.00"));
+	connect(DGLineEdit, &QLineEdit::textChanged, this, [this]()
+	{
+		bool ok;
+		QString valueStr = frRateLineEdit->text();
+		dg = valueStr.toFloat(&ok);
+	});
+	QPushButton *DGOKButton = new QPushButton(tr("OK"));
+	connect(DGOKButton, &QPushButton::clicked, this, [this]()
+	{
+		setDG(dg);
+	});
+	//AG&CG
+	QLabel *AGCGLabel = new QLabel(tr("Gain Total(AG&CG):"));
+	AGCGComboBox = new QComboBox;
+	AGCGComboBox->addItem(tr("1.00"));
+	AGCGComboBox->addItem(tr("1.14"));
+	AGCGComboBox->addItem(tr("1.33"));
+	AGCGComboBox->addItem(tr("1.60"));
+	AGCGComboBox->addItem(tr("2.00"));
+	AGCGComboBox->addItem(tr("2.29"));
+	AGCGComboBox->addItem(tr("2.67"));
+	AGCGComboBox->addItem(tr("3.20"));
+	AGCGComboBox->addItem(tr("4.00"));
+	AGCGComboBox->addItem(tr("5.33"));
+	AGCGComboBox->addItem(tr("8.00"));
+	connect(AGCGComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(AGCGBoxChanged()));
+	
+	QPushButton *AGCGOKButton = new QPushButton(tr("OK"));
+	connect(AGCGOKButton, &QPushButton::clicked, this, [this]()
+	{
+		setAGCG(ag_cg);
+	});
 
 	QGridLayout *cameraParaLayout = new QGridLayout;
 	//cameraParaLayout->setContentsMargins(8, 8, 8, 8);      //设置布局内部四边的空隙
@@ -80,18 +116,29 @@ void QquickLookCamera::createControlFrame()
 	cameraParaLayout->addWidget(expoTimeLabel, 0, 0);
 	cameraParaLayout->addWidget(expoTimeLineEdit, 1, 0);
 	cameraParaLayout->addWidget(expoTimeOKButton, 2, 0);
+
 	cameraParaLayout->addWidget(frRateLabel, 3, 0);
 	cameraParaLayout->addWidget(frRateLineEdit, 4, 0);
 	cameraParaLayout->addWidget(frRateOKButton, 5, 0);
 
-	QGroupBox *cameraPara = new QGroupBox(tr("camera parameter"));
-	cameraPara->setContentsMargins(20, 20, 20, 20);
-	cameraPara->setLayout(cameraParaLayout);
+	cameraParaLayout->addWidget(DGLabel, 6, 0);
+	cameraParaLayout->addWidget(DGLineEdit, 7, 0);
+	cameraParaLayout->addWidget(DGOKButton, 8, 0);
+
+	cameraParaLayout->addWidget(AGCGLabel, 9, 0);
+	cameraParaLayout->addWidget(AGCGComboBox, 10, 0);
+	cameraParaLayout->addWidget(AGCGOKButton, 11, 0);
+
+	QGroupBox *paraBox = new QGroupBox(tr("parameter settings"));
+	paraBox->setContentsMargins(20, 20, 20, 20);
+	paraBox->setLayout(cameraParaLayout);
 
 	QPushButton *startButton = new QPushButton(tr("StartUpload"));
 	connect(startButton, &QPushButton::clicked, this, &QquickLookCamera::AECRun);
-	QPushButton *stopButton = new QPushButton(tr("Stop"));
+	QPushButton *stopButton = new QPushButton(tr("StopUpload"));
 	connect(stopButton, &QPushButton::clicked, this, &QquickLookCamera::Stop);
+	QPushButton *saveButton = new QPushButton(tr("SavePicture"));
+	connect(saveButton, &QPushButton::clicked, this, &QquickLookCamera::saveFlie);
 
 	//Frame布局
 	QGridLayout *frameLayout = new QGridLayout;
@@ -99,12 +146,18 @@ void QquickLookCamera::createControlFrame()
 	frameLayout->setSpacing(10);
 	frameLayout->addWidget(startButton, 0, 0);
 	frameLayout->addWidget(stopButton, 1, 0);
-	frameLayout->addWidget(cameraPara, 2, 0);
+	frameLayout->addWidget(saveButton, 2, 0);
+	frameLayout->addWidget(paraBox, 3, 0);
 	ctrlFrame->setLayout(frameLayout);
 }
 
 void QquickLookCamera::cerateStatus()
 {
+	infoLabel = new QLabel;
+	infoLabel->setText(tr(" | Tips: "));
+	infoLabel->setFixedWidth(300);
+	statusBar()->addPermanentWidget(infoLabel);
+
 	frRateLabel = new QLabel;
 	QString tempfr = tr(" | frame rate: ");
 	tempfr += QString::number(frRate);
@@ -143,23 +196,41 @@ void QquickLookCamera::AECRun()
 	InstructionProcess instruct(Instruction::CMOSE);
 	instruct.AECRun();
 	uploadFlag = true;
-	QMessageBox::information(this, tr("Tips"), tr("Data is alreay upload!"));
+	infoLabel->setText(tr(" | Tips: Data is alreay upload!"));
+	infoLabel->update();
+}
+void QquickLookCamera::Stop()
+{
+	InstructionProcess instruct(Instruction::CMOSE);
+	for (int i = 0; i < 10; ++i)
+	{
+		instruct.Stop();
+	}
+
+	uploadFlag = false;
+	infoLabel->setText(tr(" | Tips: Data stop uploading!"));
+	infoLabel->update();
 }
 
-void QquickLookCamera::setExpoTime(long long _time)
+void QquickLookCamera::setExpoTime(unsigned int _time)
 {
 	if (!uploadFlag)
 	{
 		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
 		return;
 	}
-	if (expoTime >= frLength*0.8)
-		expoTime = frLength*0.8;
+	if (expoTime >= frLength)
+	{
+		expoTime = frLength;
+		QMessageBox::critical(this, tr("Error"), tr("Exposure time cannot be bigger than frame length!"));
+	}
 	else
 		expoTime = _time;
 
 	InstructionProcess instruct(Instruction::CMOSE);
-	instruct.ManualRun(expoTime);
+	//instruct.SetDG(dg);
+	instruct.setExpoTime(expoTime);
+	//instruct.SetAGCG(ag_cg);
 
 	QString tempet = tr(" | exposure time: ");
 	tempet += QString::number(expoTime);
@@ -167,7 +238,8 @@ void QquickLookCamera::setExpoTime(long long _time)
 	expoTimeLabel->update();
 	
 	uploadFlag = true;
-	QMessageBox::information(this, tr("Tips"), tr("Data is alreay upload!"));
+	infoLabel->setText(tr(" | Tips: Data is already upload!"));
+	infoLabel->update();
 }
 void QquickLookCamera::setFrRate(int _rate)
 {
@@ -194,23 +266,49 @@ void QquickLookCamera::setFrRate(int _rate)
 	frLengthLabel->update();
 
 	uploadFlag = true;
-	QMessageBox::information(this, tr("Tips"), tr("Data is alreay upload!"));
+	infoLabel->setText(tr(" | Tips: Data is alreay upload!"));
+	infoLabel->update();
+}
+void QquickLookCamera::setAGCG(float _totalGain)
+{
+	if (!uploadFlag)
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
+		return;
+	}
+	ag_cg = _totalGain;
+
+	InstructionProcess instruct(Instruction::CMOSE);
+	//instruct.SetDG(dg);
+	//instruct.setExpoTime(expoTime);
+	instruct.SetAGCG(ag_cg);
+
+	uploadFlag = true;
+	infoLabel->setText(tr(" | Tips: Data is alreay upload!"));
+	infoLabel->update();
+}
+void QquickLookCamera::setDG(float _dg)
+{
+	if (!uploadFlag)
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
+		return;
+	}
+	dg = _dg;
+
+	InstructionProcess instruct(Instruction::CMOSE);
+	instruct.SetDG(dg);
+	//instruct.setExpoTime(expoTime);
+	//instruct.SetAGCG(ag_cg);
+
+	uploadFlag = true;
+	infoLabel->setText(tr(" | Tips: Data is alreay upload!"));
+	infoLabel->update();
 }
 
-void QquickLookCamera::Stop()
+void QquickLookCamera::AGCGBoxChanged()
 {
-	InstructionProcess instruct(Instruction::CMOSE);
-	instruct.Stop();
-	instruct.Stop();
-	instruct.Stop();
-	instruct.Stop();
-	instruct.Stop();
-	instruct.Stop();
-	instruct.Stop();
-	instruct.Stop();
-	instruct.Stop();
-	instruct.Stop();
-
-	uploadFlag = false;
-	QMessageBox::information(this, tr("Tips"), tr("Data is alreay stop uploading!"));
+	bool ok;
+	QString valueStr = AGCGComboBox->currentText();
+	ag_cg = valueStr.toFloat(&ok);
 }

@@ -32,19 +32,27 @@ private:
 	CMOSID cmosId;
 	CMD *cmd;
 
-	int m_FPS;
-	long long m_frLength{ 10000 };//帧长
-	long long m_frExpoTime{ 8000 };//曝光时间，小于帧长
+	unsigned int m_ag_cg{ 0x01e2 };//寄存器值
+	unsigned int m_dg{ 0x0080 };//寄存器值
+	int m_FPS{ 18 };
+	unsigned int m_frLength{ 10000 };//帧长
+	unsigned int m_frExpoTime{ 2000 };//曝光时间，小于帧长
 
 	bool m_recving{ false }; //线程退出标识
 	bool m_sendingAECRun{ false }; //线程退出标识
-	bool m_sendingManualRun{ false }; //线程退出标识
+	bool m_sendingsetExpoTime{ false }; //线程退出标识
 	bool m_sendingSetFPS{ false }; //线程退出标识
+	bool m_sendingSetDG{ false };
+	bool m_sendingSetAGCG{ false };
 
 	std::thread m_thrSendSetFPS; //线程句柄
 	std::thread m_thrRecv; //线程句柄
-	std::thread m_thrSendManualRun; //线程句柄
+	std::thread m_thrSendsetExpoTime; //线程句柄
 	std::thread m_thrSendAECRun; //线程句柄
+	std::thread m_thrSendSetDG;
+	std::thread m_thrSendSetAGCG;
+
+	bool SENDFLAG = false;
 //socket
 protected:
 	CInitSock c;//Winsock库的装入和释放
@@ -56,7 +64,7 @@ protected:
 //
 public:
 	//
-	virtual bool startSendAECRun()
+	bool startSendAECRun()
 	{
 		if (m_sendingAECRun)
 			return false;
@@ -64,7 +72,7 @@ public:
 		m_thrSendAECRun = std::thread([this](){this->AECRun(); });
 		return true;
 	}
-	virtual void stopSendAECRun()
+	void stopSendAECRun()
 	{
 		m_sendingAECRun = false;
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -72,23 +80,24 @@ public:
 			m_thrSendAECRun.join();
 	}
 	//
-	virtual bool startSendManualRun(long long _expoTime)
+	bool startSendsetExpoTime(unsigned int _expoTime)
 	{
 		m_frExpoTime = _expoTime;
-		if (m_sendingManualRun)
+		if (m_sendingsetExpoTime)
 			return false;
-		m_sendingManualRun = true;
-		m_thrSendManualRun = std::thread([this](){this->ManualExposure(m_frExpoTime); });
+		m_sendingsetExpoTime = true;
+		m_thrSendsetExpoTime = std::thread([this](){this->ManualExposure(m_frExpoTime); });
 		return true;
 	}
-	virtual void stopSendManualRun()
+	void stopSendsetExpoTime()
 	{
-		m_sendingManualRun = false;
+		m_sendingsetExpoTime = false;
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
-		if (m_thrSendManualRun.joinable())
-			m_thrSendManualRun.join();
+		if (m_thrSendsetExpoTime.joinable())
+			m_thrSendsetExpoTime.join();
 	}
-	virtual bool startSendSetFPS(int _fps)
+	//
+	bool startSendSetFPS(int _fps)
 	{
 		m_FPS = _fps;
 		if (m_sendingSetFPS)
@@ -97,17 +106,48 @@ public:
 		m_thrSendSetFPS = std::thread([this](){this->SetFPS(m_FPS); });
 		return true;
 	}
-	//停止发送
-	virtual void stopSendSetFPS()
+	void stopSendSetFPS()
 	{
 		m_sendingSetFPS = false;
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		if (m_thrSendSetFPS.joinable())
 			m_thrSendSetFPS.join();
 	}
-
 	//
-	virtual bool startRecv()
+	bool startSendSetAGCG(int _total)
+	{
+		m_ag_cg = _total;
+		if (m_sendingSetAGCG)
+			return false;
+		m_sendingSetAGCG = true;
+		m_thrSendSetAGCG = std::thread([this](){this->SetAGCG(m_ag_cg); });
+		return true;
+	}
+	void stopSendSetAGCG()
+	{
+		m_sendingSetAGCG = false;
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		if (m_thrSendSetAGCG.joinable())
+			m_thrSendSetAGCG.join();
+	}
+	//
+	bool startSendSetDG(int _dg)
+	{
+		if (m_sendingSetDG)
+			return false;
+		m_sendingSetDG = true;
+		m_thrSendSetDG = std::thread([this](){this->SetDG(m_dg); });
+		return true;
+	}
+	void stopSendSetDG()
+	{
+		m_sendingSetDG = false;
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		if (m_thrSendSetDG.joinable())
+			m_thrSendSetDG.join();
+	}
+	//
+	bool startRecv()
 	{
 		if (m_recving)
 			return false;
@@ -115,7 +155,7 @@ public:
 		m_thrRecv = std::thread([this](){this->receive(); });
 		return true;
 	}
-	virtual void stopRecv()
+	void stopRecv()
 	{
 		m_recving = false;
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
@@ -127,11 +167,19 @@ private:
 	unsigned short cmdCounter;//发送指令计数，初值为0
 public:
 	void SetCmosId(CMOSID id);
-	void AECRun();//开始上传图像，自动曝光
-	void ManualExposure(long long _expoTime);//自动曝光
-	void SetFPS(int _fps);
-	void Stop();
+	void Stop()
+	{
+		PowerDown();
+	}
 protected:
+	//开始上传图像，自动曝光
+	void AECRun();
+	//手动曝光
+	void ManualExposure(unsigned int _expoTime);
+	void SetFPS(int _fps);
+	void SetAGCG(float _gainTotal);
+	void SetDG(float _dg);
+
 	bool buildCmdReg(int _addr, int _data);
 	void sendCmdReg(int _addr, int _data);
 	void PowerUp();
