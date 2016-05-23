@@ -1,12 +1,11 @@
-#ifndef ARRAYCAMERADATAITEM_H
-#define ARRAYCAMERADATAITEM_H
+#pragma once
 
 #include "IDataProcessUnit.h"
 #include "IDataItem.h"
 
 #define FRM_SYNWORD 0x499602D2
 
-class ArrayCameraDataItem : public IDataItem, public IDataProcessUnit
+class ImageDataItem : public IDataItem, public IDataProcessUnit
 {
 protected:
     std::shared_ptr<unsigned char> m_dualImageBuffer[2]; //entire image data buffer, dual
@@ -14,7 +13,7 @@ protected:
     long long m_newFrame{-1}; //frame counter
 	long long m_curFrameCnt{ -1 }; //
 protected:
-    virtual void process() override; //inherit from IProcessingItem
+    virtual void process() override; //inherit from IDataProcessUnit
 
 protected:
     void storePayloadData(const unsigned char* buf);
@@ -23,8 +22,8 @@ protected:
 		m_newFrame = m_curLineCnt = -1;
 	}
 public:
-    ArrayCameraDataItem();
-    ~ArrayCameraDataItem();
+    ImageDataItem();
+    ~ImageDataItem();
 
     //inherit from IDataItem
     virtual bool setup(int assWidth, int imgWidth, int height) override;
@@ -47,5 +46,3 @@ struct CMOS_FRAME_HEAD
 	unsigned int lineCount;//––±Í ∂
 };
 #pragma pack (pop)
-
-#endif // ARRAYCAMERADATAITEM_H

@@ -3,10 +3,11 @@
 
 #include <QtWidgets/QMainWindow>
 #include "./QData/InputCMOS.h"
-#include "./QData/ArrayCameraDataItem.h"
+#include "./QData/ImageDataItem.h"
+#include "QData\RotatedImageDataItem.h"
 #include "./QView/IWindowItem.h"
 #include "./QView/Utility/Pixel8To32.h"
-#include "./QView/Utility/bayer2rgb.h"
+#include "./QView/Utility/PixelBayerToRGB.h"
 
 #include "./QView/ImageMagnifierItem.h"  //class ImageMagnifierItem;
 #include "./SaveFile/SaveToBmp24.h"
@@ -28,10 +29,15 @@ public:
 	void setSaveFile();
 	//void setRotate90();
 protected:
-	std::shared_ptr<IDataItem> m_dataProvider0{ new ArrayCameraDataItem };
-	std::shared_ptr<IDataItem> m_dataProvider1{ new ArrayCameraDataItem };
-	std::shared_ptr<IDataItem> m_dataProvider2{ new ArrayCameraDataItem };
-	std::shared_ptr<IDataItem> m_dataProvider3{ new ArrayCameraDataItem };
+	std::shared_ptr<IDataItem> m_dataProvider0{ new ImageDataItem };
+	std::shared_ptr<IDataItem> m_dataProvider1{ new ImageDataItem };
+	std::shared_ptr<IDataItem> m_dataProvider2{ new ImageDataItem };
+	std::shared_ptr<IDataItem> m_dataProvider3{ new ImageDataItem };
+
+	std::shared_ptr<IDataItem> m_rotatedDataProvider0{ new RotatedImageDataItem };
+	std::shared_ptr<IDataItem> m_rotatedDataProvider1{ new RotatedImageDataItem };
+	std::shared_ptr<IDataItem> m_rotatedDataProvider2{ new RotatedImageDataItem };
+	std::shared_ptr<IDataItem> m_rotatedDataProvider3{ new RotatedImageDataItem };
 
 	/*std::shared_ptr<IDataItem> m_rotateDateProvider0{ new rotateDateProvider };
 	std::shared_ptr<IDataItem> m_rotateDateProvider1{ new rotateDateProvider };
@@ -42,15 +48,15 @@ protected:
 	IDataProcessUnit* m_inputSrc1{ new InputCMOS(3957, inet_addr("192.168.1.2")) };	
 	IDataProcessUnit* m_inputSrc2{ new InputCMOS(3958, inet_addr("192.168.1.2")) };
 	IDataProcessUnit* m_inputSrc3{ new InputCMOS(3959, inet_addr("192.168.1.2")) };
-	std::shared_ptr<IBuffer> m_cmosData0{ new CCirQueue };
-	std::shared_ptr<IBuffer> m_cmosData1{ new CCirQueue };
-	std::shared_ptr<IBuffer> m_cmosData2{ new CCirQueue };
-	std::shared_ptr<IBuffer> m_cmosData3{ new CCirQueue };
+	std::shared_ptr<IBuffer> m_cmosData0{ new CCirQueue };//输入数据
+	std::shared_ptr<IBuffer> m_cmosData1{ new CCirQueue };//输入数据
+	std::shared_ptr<IBuffer> m_cmosData2{ new CCirQueue };//输入数据
+	std::shared_ptr<IBuffer> m_cmosData3{ new CCirQueue };//输入数据
 
-	std::shared_ptr<IBuffer> m_cmosFinalData0{ new CCirQueue };
-	std::shared_ptr<IBuffer> m_cmosFinalData1{ new CCirQueue };
-	std::shared_ptr<IBuffer> m_cmosFinalData2{ new CCirQueue };
-	std::shared_ptr<IBuffer> m_cmosFinalData3{ new CCirQueue };
+	std::shared_ptr<IBuffer> m_cmosImageData0{ new CCirQueue };//图像帧数据
+	std::shared_ptr<IBuffer> m_cmosImageData1{ new CCirQueue };//图像帧数据
+	std::shared_ptr<IBuffer> m_cmosImageData2{ new CCirQueue };//图像帧数据
+	std::shared_ptr<IBuffer> m_cmosImageData3{ new CCirQueue };//图像帧数据
 
 protected:
 

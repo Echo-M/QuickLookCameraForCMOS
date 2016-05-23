@@ -1,11 +1,11 @@
-#include "bayer2rgb.h"
+#include "PixelBayerToRGB.h"
 
 
-Bayer2RGB::Bayer2RGB()
+PixelBayerToRGB::PixelBayerToRGB()
 {
 	
 }
-Bayer2RGB::~Bayer2RGB()
+PixelBayerToRGB::~PixelBayerToRGB()
 {
 
 }
@@ -69,7 +69,7 @@ void bayer_bilinear(unsigned char* dst, const unsigned char* src, int width, int
 //    B(x + 1, y + 0) = Bay(x + 1, y + 1);
 //}
 	
-bool Bayer2RGB::convert(unsigned char* dst, const unsigned char* src, int width, int height, unsigned char alpha) const
+bool PixelBayerToRGB::convert(unsigned char* dst, const unsigned char* src, int width, int height, unsigned char alpha) const
 {
 	int i, j;
 

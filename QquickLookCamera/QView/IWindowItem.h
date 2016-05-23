@@ -20,8 +20,8 @@ struct WindowLayout
     int colSpan{1}; //default 1
     int rowSpan{1}; //default 1
     int colStretchFactor{1}; //default 1
-    int hSizePolicy{QSizePolicy::Preferred}; //width size Policy
-    int vSizePolicy{QSizePolicy::Preferred}; //height
+	int hSizePolicy{ QSizePolicy::Minimum }; //width size Policy
+	int vSizePolicy{ QSizePolicy::Minimum }; //height
     int hSize; //if hSizePolicy == Fixed, Minimum, Maximum, specify the width
     int vSize; //ditto, height
 

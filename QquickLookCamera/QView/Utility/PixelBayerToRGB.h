@@ -1,5 +1,4 @@
-#ifndef BAYER2RGB_H
-#define BAYER2RGB_H
+#pragma once
 
 #include"PixelConvertor.h"
 
@@ -11,11 +10,11 @@
 #define u32 unsigned int
 //G B
 //R G
-class Bayer2RGB :public PixelConvertor
+class PixelBayerToRGB :public PixelConvertor
 {
 public:
-	Bayer2RGB();
-	~Bayer2RGB();
+	PixelBayerToRGB();
+	~PixelBayerToRGB();
 private:
 
 public:
@@ -27,5 +26,3 @@ public:
 		return true;
 	}
 };
-
-#endif // BAYER2RGB_H

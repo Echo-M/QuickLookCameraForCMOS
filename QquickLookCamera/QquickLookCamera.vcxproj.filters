@@ -55,9 +55,6 @@
     <ClCompile Include="GeneratedFiles\qrc_qquicklookcamera.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="QData\ArrayCameraDataItem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QData\CirQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -97,9 +94,6 @@
     <ClCompile Include="QView\ImageMagnifierItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QView\Utility\bayer2rgb.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SaveFile\SaveToFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -127,11 +121,23 @@
     <ClCompile Include="QData\semaphore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QData\ImageProcessing.cpp">
+    <ClCompile Include="QData\RotatedImageDataItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QData\ProcessedImageDataItem.cpp">
+    <ClCompile Include="QData\ImageDataItem.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QView\Utility\PixelBayerToRGB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QView\ImageWindowItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ImageWindowItem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ImageWindowItem.cpp">
+      <Filter>Generated Files\Release</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -150,13 +156,13 @@
     <CustomBuild Include="myclass.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="QView\ImageWindowItem.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_qquicklookcamera.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QData\ArrayCameraDataItem.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QData\CirQueue.h">
       <Filter>Header Files</Filter>
@@ -191,9 +197,6 @@
     <ClInclude Include="QView\Utility\PixelConvertor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="QView\Utility\bayer2rgb.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SaveFile\SaveToFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -212,10 +215,13 @@
     <ClInclude Include="QData\semaphore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="QData\ImageProcessing.h">
+    <ClInclude Include="QData\RotatedImageDataItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="QData\ProcessedImageDataItem.h">
+    <ClInclude Include="QData\ImageDataItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QView\Utility\PixelBayerToRGB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

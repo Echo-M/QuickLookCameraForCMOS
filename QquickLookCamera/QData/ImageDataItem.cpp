@@ -1,4 +1,4 @@
-﻿#include "ArrayCameraDataItem.h"
+﻿#include "ImageDataItem.h"
 #include "IBuffer.h"
 #include "FeaturesOfDataItem.h"
 
@@ -7,19 +7,19 @@
 #include "initsock.h"
 
 //构造函数：辅助数据
-ArrayCameraDataItem::ArrayCameraDataItem()
+ImageDataItem::ImageDataItem()
 {
     //m_features->attachedDataSize = POINT_SIZE::SIZE_1;
     //m_features->payloadDataSize = POINT_SIZE::SIZE_1;
 }
 
-ArrayCameraDataItem::~ArrayCameraDataItem()
+ImageDataItem::~ImageDataItem()
 {
 
 }
 
 //设置长宽高
-bool ArrayCameraDataItem::setup(int assWidth, int imgWidth, int height)
+bool ImageDataItem::setup(int assWidth, int imgWidth, int height)
 {
     if (assWidth <0 || imgWidth <= 0 || height <= 0)
         return false;
@@ -32,7 +32,7 @@ bool ArrayCameraDataItem::setup(int assWidth, int imgWidth, int height)
     }
 
     //stop processing , reset image&assist data ptr, set features of width&height
-	IDataProcessUnit::stop();
+	stop();
     for (int i=0; i<2; ++i)
     {
         m_dualImageBuffer[i] = img[i];
@@ -51,13 +51,13 @@ bool ArrayCameraDataItem::setup(int assWidth, int imgWidth, int height)
 
     //start processing
 	IDataItem::setup(assWidth, imgWidth, height);
-	IDataProcessUnit::start();
+	start();
 
 	return true;
 }
 
 
-void ArrayCameraDataItem::process()
+void ImageDataItem::process()
 {
     resetCounter();
     m_curFrameCnt = 0;
@@ -110,7 +110,7 @@ void ArrayCameraDataItem::process()
 #include <QFile>
 //unsigned char* buf0 = new unsigned char[512 * 1024 * 1024];
 //long long cnt = 0;
-void ArrayCameraDataItem::storePayloadData(const unsigned char *buf)
+void ImageDataItem::storePayloadData(const unsigned char *buf)
 {
 	//面阵相机包格式处理流程：
 	//提取帧计数（从0开始），检查行号，帧计数跳变后，行号应该从0开始，帧计数未跳变时，根据分通道检查图像数据
@@ -181,6 +181,11 @@ void ArrayCameraDataItem::storePayloadData(const unsigned char *buf)
 			{
 				memcpy(m_dualImageBuffer[1].get(), m_dualImageBuffer[0].get(), m_features->linesPerFrame*imgLineSize);
 			}
+			std::shared_ptr<IBuffer>& outputBuffer_zero = m_outputBuffer[0].second;
+			if (outputBuffer_zero)
+			{
+				outputBuffer_zero->push_back(m_dualImageBuffer[1].get(), m_features->linesPerFrame*imgLineSize);
+			}
 		}
 	}
 	else
@@ -190,8 +195,8 @@ void ArrayCameraDataItem::storePayloadData(const unsigned char *buf)
 }
 
 //不做丢包处理
-int temp[1024]{0};
-//void ArrayCameraDataItem::storePayloadData(const unsigned char *buf)
+//int temp[1024]{0};
+//void ImageDataItem::storePayloadData(const unsigned char *buf)
 //{
 //	//面阵相机包格式处理流程：
 //	//提取帧计数（从0开始），检查行号，帧计数跳变后，行号应该从0开始，帧计数未跳变时，根据分通道检查图像数据
@@ -240,7 +245,7 @@ int temp[1024]{0};
 //}
 
 //copy area of image data
-bool ArrayCameraDataItem::copyArea(int x, int y, int w, int h, unsigned char* extPtr) const
+bool ImageDataItem::copyArea(int x, int y, int w, int h, unsigned char* extPtr) const
 {
 	if (!m_dualImageBuffer[1] || !extPtr)
 		return false;
@@ -254,7 +259,7 @@ bool ArrayCameraDataItem::copyArea(int x, int y, int w, int h, unsigned char* ex
 }
 
 ////get entire image data ptr
-//bool ArrayCameraDataItem::internalImageDataPtr(const unsigned char*& ptr) const
+//bool ImageDataItem::internalImageDataPtr(const unsigned char*& ptr) const
 //{
 //	if (!m_dualImageBuffer[1] || !ptr)
 //		return false;
@@ -263,7 +268,7 @@ bool ArrayCameraDataItem::copyArea(int x, int y, int w, int h, unsigned char* ex
 //}
 //
 ////get entire assist data ptr
-//bool ArrayCameraDataItem::internalAssistDataPtr(const unsigned char*& ptr) const
+//bool ImageDataItem::internalAssistDataPtr(const unsigned char*& ptr) const
 //{
 //	ptr = m_dualAssistBuffer[1].get();
 //	return true;

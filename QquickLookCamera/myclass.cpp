@@ -8,43 +8,48 @@ MyClass::MyClass(QWidget *parent,Qt::WindowFlags f)
   gridLayout(new QGridLayout(this))
 {
 	//初始化数据缓冲区
-	std::dynamic_pointer_cast<CCirQueue>(m_cmosData0)->Initial(1024 * 1300 * 128, 1024 * 1300 * 1);
-	std::dynamic_pointer_cast<CCirQueue>(m_cmosData1)->Initial(1024 * 1300 * 128, 1024 * 1300 * 1);
-	std::dynamic_pointer_cast<CCirQueue>(m_cmosData2)->Initial(1024 * 1300 * 128, 1024 * 1300 * 1);
-	std::dynamic_pointer_cast<CCirQueue>(m_cmosData3)->Initial(1024 * 1300 * 128, 1024 * 1300 * 1);
-	//数据源注册输出缓冲区
-	m_inputSrc0->registerOutputBuffer(0, m_cmosData0);  //向输出缓冲区中送数据
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosData0)->Initial(1024 * 1300 * 64, 1300);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosData1)->Initial(1024 * 1300 * 64, 1300);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosData2)->Initial(1024 * 1300 * 64, 1300);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosData3)->Initial(1024 * 1300 * 64, 1300);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosImageData0)->Initial(1024 * 1280 * 64, 1024 * 1280 * 1);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosImageData1)->Initial(1024 * 1280 * 64, 1024 * 1280 * 1);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosImageData2)->Initial(1024 * 1280 * 64, 1024 * 1280 * 1);
+	std::dynamic_pointer_cast<CCirQueue>(m_cmosImageData3)->Initial(1024 * 1280 * 64, 1024 * 1280 * 1);
+	//注册缓冲区
+	m_inputSrc0->registerOutputBuffer(0, m_cmosData0); 
 	m_inputSrc1->registerOutputBuffer(0, m_cmosData1);	
 	m_inputSrc2->registerOutputBuffer(0, m_cmosData2);
 	m_inputSrc3->registerOutputBuffer(0, m_cmosData3);
-	//start启动线程（调用m_thrProcess = std::thread([this](){this->process(); })），进入process；源数据InputCMOS：将接收数据放入缓冲区0；
+	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider0)->registerInputBuffer(0, m_cmosData0); 
+	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider1)->registerInputBuffer(0, m_cmosData1);
+	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider2)->registerInputBuffer(0, m_cmosData2);
+	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider3)->registerInputBuffer(0, m_cmosData3);
+	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider0)->registerOutputBuffer(0, m_cmosImageData0);
+	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider1)->registerOutputBuffer(0, m_cmosImageData1);
+	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider2)->registerOutputBuffer(0, m_cmosImageData2);
+	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider3)->registerOutputBuffer(0, m_cmosImageData3);
+	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider0)->registerInputBuffer(0, m_cmosImageData0);
+	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider1)->registerInputBuffer(0, m_cmosImageData1);
+	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider2)->registerInputBuffer(0, m_cmosImageData2);
+	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider3)->registerInputBuffer(0, m_cmosImageData3);
+
+	//开始上传数据
 	m_inputSrc0->start();
 	m_inputSrc1->start();
 	m_inputSrc2->start();
 	m_inputSrc3->start();
-	//数据提供注册输入缓冲区
-	std::dynamic_pointer_cast<ArrayCameraDataItem>(m_dataProvider0)->registerInputBuffer(0, m_cmosData0);  //从输入缓冲区中取数据
-	std::dynamic_pointer_cast<ArrayCameraDataItem>(m_dataProvider1)->registerInputBuffer(0, m_cmosData1);
-	std::dynamic_pointer_cast<ArrayCameraDataItem>(m_dataProvider2)->registerInputBuffer(0, m_cmosData2);
-	std::dynamic_pointer_cast<ArrayCameraDataItem>(m_dataProvider3)->registerInputBuffer(0, m_cmosData3);
-
-	//注册输出缓冲区
-	std::dynamic_pointer_cast<ArrayCameraDataItem>(m_dataProvider0)->registerOutputBuffer(0, m_cmosFinalData0);
-	std::dynamic_pointer_cast<ArrayCameraDataItem>(m_dataProvider1)->registerOutputBuffer(0, m_cmosFinalData1);
-	std::dynamic_pointer_cast<ArrayCameraDataItem>(m_dataProvider2)->registerOutputBuffer(0, m_cmosFinalData2);
-	std::dynamic_pointer_cast<ArrayCameraDataItem>(m_dataProvider3)->registerOutputBuffer(0, m_cmosFinalData3);
-
-	//旋转数据注册输入缓冲区
-	/*std::dynamic_pointer_cast<rotateDateProvider>(m_rotateDateProvider0)->registerInputBuffer(0, m_cmosFinalData0);
-	std::dynamic_pointer_cast<rotateDateProvider>(m_rotateDateProvider1)->registerInputBuffer(0, m_cmosFinalData1);
-	std::dynamic_pointer_cast<rotateDateProvider>(m_rotateDateProvider2)->registerInputBuffer(0, m_cmosFinalData2);
-	std::dynamic_pointer_cast<rotateDateProvider>(m_rotateDateProvider3)->registerInputBuffer(0, m_cmosFinalData3);*/
-
-	//设置宽高
-	m_dataProvider0->setup(20, 1280, 1024);   //最后提供数据ArrayCameraDataItem：去帧头，放入缓冲区1；
+	//开始图像解析
+	m_dataProvider0->setup(20, 1280, 1024); 
 	m_dataProvider1->setup(20, 1280, 1024);
 	m_dataProvider2->setup(20, 1280, 1024);
 	m_dataProvider3->setup(20, 1280, 1024);
+	//开始图像旋转
+	m_rotatedDataProvider0->setup(20, 1024, 1280);//
+	m_rotatedDataProvider1->setup(20, 1024, 1280);
+	m_rotatedDataProvider2->setup(20, 1024, 1280);
+	m_rotatedDataProvider3->setup(20, 1024, 1280);
+
 	//设置通道编号
 	m_magnifier0->setCmosNumber(0);
 	m_magnifier00->setCmosNumber(4);
@@ -52,13 +57,18 @@ MyClass::MyClass(QWidget *parent,Qt::WindowFlags f)
 	m_magnifier2->setCmosNumber(2);
 	m_magnifier3->setCmosNumber(3);
     //窗口绑定数据指针，初始化m_dataProvider
-	m_magnifier0->setDataItemPtr(m_dataProvider0);
-	m_magnifier00->setDataItemPtr(m_dataProvider0);
-	m_magnifier1->setDataItemPtr(m_dataProvider1);
-	m_magnifier2->setDataItemPtr(m_dataProvider2);
-	m_magnifier3->setDataItemPtr(m_dataProvider3);
+	m_magnifier0->setDataItemPtr(m_rotatedDataProvider0);//
+	m_magnifier00->setDataItemPtr(m_rotatedDataProvider0);
+	m_magnifier1->setDataItemPtr(m_rotatedDataProvider1);
+	m_magnifier2->setDataItemPtr(m_rotatedDataProvider2);
+	m_magnifier3->setDataItemPtr(m_rotatedDataProvider3);
+	//m_magnifier0->setDataItemPtr(m_dataProvider0);//
+	//m_magnifier00->setDataItemPtr(m_dataProvider0);
+	//m_magnifier1->setDataItemPtr(m_dataProvider1);
+	//m_magnifier2->setDataItemPtr(m_dataProvider2);
+	//m_magnifier3->setDataItemPtr(m_dataProvider3);
 	//窗口绑定数据转换指针，初始化m_convertor
-	m_magnifier0->setConvertor(std::shared_ptr<PixelConvertor>(new Bayer2RGB));   //显示彩色图像时，要改窗口构造函数
+	m_magnifier0->setConvertor(std::shared_ptr<PixelConvertor>(new PixelBayerToRGB));   //显示彩色图像时，要改窗口构造函数
 	m_magnifier00->setConvertor(std::shared_ptr<PixelConvertor>(new Pixel8To32));//放大灰度显示，对比
 	m_magnifier1->setConvertor(std::shared_ptr<PixelConvertor>(new Pixel8To32));
 	m_magnifier2->setConvertor(std::shared_ptr<PixelConvertor>(new Pixel8To32));
@@ -71,11 +81,11 @@ MyClass::MyClass(QWidget *parent,Qt::WindowFlags f)
 	m_magnifier3->setSave(std::shared_ptr<SaveToFile>(new SaveToBmpGray));
 
 	//设置窗口大小
-	m_magnifier0->setMagnifierRange(1280, 1024);
-	m_magnifier00->setMagnifierRange(1280, 1024);
-	m_magnifier1->setMagnifierRange(1280, 1024);
-	m_magnifier2->setMagnifierRange(1280, 1024);
-	m_magnifier3->setMagnifierRange(1280, 1024);
+	m_magnifier0->setMagnifierRange(1024, 1280);
+	m_magnifier00->setMagnifierRange(1024, 1280);
+	m_magnifier1->setMagnifierRange(1024, 1280);
+	m_magnifier2->setMagnifierRange(1024, 1280);
+	m_magnifier3->setMagnifierRange(1024, 1280);
 	m_magnifier00->setWindowFlags(Qt::Window);
 	m_magnifier00->show();//通道0，放大图
 	m_magnifier00->resize(420, 320);
