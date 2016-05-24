@@ -5,7 +5,7 @@ InstructionProcess::InstructionProcess(Instruction::CMOSID _cmosId) :
 	m_cmosId(_cmosId),
 	port_local_send(3954),
 	port_far_send(4567),
-	port_local_recv(3955),
+	port_local_recv(39550),
 	ip_local("192.168.1.2"),
 	ip_far("192.168.1.1")
 {
@@ -56,6 +56,7 @@ void InstructionProcess::setExpoTime(unsigned int _expoTime)
 void InstructionProcess::Stop()
 {
 	instruct = new Instruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
+	instruct->SetCmosId(m_cmosId);
 	instruct->Stop();
 	delete instruct;
 }

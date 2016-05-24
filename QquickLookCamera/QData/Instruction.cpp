@@ -86,7 +86,7 @@ bool Instruction::buildCmdReg(int _addr, int _data)
 
 void Instruction::sendCmdReg(int _addr, int _data)
 {
-	if (SENDFLAG) sendSemaphore.wait();
+	if (SENDFLAG == true) sendSemaphore.wait();
 	SENDFLAG = true;
 
 	if (!buildCmdReg(_addr, _data))
@@ -97,6 +97,23 @@ void Instruction::sendCmdReg(int _addr, int _data)
 	cmdCounter++;
 
 	//recvSemaphore.signal();
+}
+
+void Instruction::ClearFIFO()
+{
+	if (SENDFLAG == true) sendSemaphore.wait();
+	SENDFLAG = true;
+
+	cmd->synWord = htonl(0x03CCF0FF);
+	cmd->dataLength = htonl(0x00000002);
+	cmd->counter = htons(cmdCounter);
+	cmd->form = htons(0x0B00);
+	cmd->timeStamp = htons(0x0000);
+	cmd->checkSum = htons(0x0000);
+	cmd->data = htonll(0x0000000100000000);
+
+	::sendto(sock_send, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_far_send, sizeof(addr_far_send));
+	cmdCounter++;
 }
 
 void Instruction::AECRun()
@@ -219,7 +236,7 @@ void Instruction::PowerDown()
 
 void Instruction::PowerUp()
 {
-	if (SENDFLAG) sendSemaphore.wait();
+	if (SENDFLAG==true) sendSemaphore.wait();
 	SENDFLAG = true;
 
 	cmd->synWord = htonl(0x03CCF0FF);
@@ -296,11 +313,41 @@ void Instruction::ExtraConfig()
 }
 void Instruction::EnableSequencer()
 {
+	ClearFIFO();
+
 	sendCmdReg(192, 0x1 << 0);//192[0]-0x1
+	//switch (cmosId)
+	//{
+	//case CMOSE:
+	//	cmd->form = htons(0x0300);
+	//	break;
+	//case CMOS1:
+	//	cmd->form = htons(0x0400);
+	//	break;
+	//case CMOS2:
+	//	cmd->form = htons(0x0500);
+	//	break;
+	//case CMOS3:
+	//	cmd->form = htons(0x0600);
+	//	break;
+	//default:
+	//	break;
+	//}
+	//cmd->synWord = htonl(0x03CCF0FF);
+	//cmd->dataLength = htonl(0x00000002);
+	//cmd->counter = htons(cmdCounter);
+	//cmd->timeStamp = htons(0x0000);
+	//cmd->checkSum = htons(0x0000);
+	//cmd->data = htonll(0x800000c000000001);
+
+	//::sendto(sock_send, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_far_send, sizeof(addr_far_send));
+	//cmdCounter++;
+
 }
 void Instruction::DisableSequencer()
 {
 	sendCmdReg(192, 0x0 << 0);//192[0]-0x1
+	ClearFIFO();
 }
 void Instruction::SoftPowerDown()
 {
@@ -371,8 +418,8 @@ void Instruction::receive()
 			{
 				int nrecv = ::recvfrom(sock_recv, (char*)cmdRecv, sizeof(CMD), 0, (LPSOCKADDR)&addr, &alen);
 				if (nrecv == 24)
-				//if (cmdRecv->synWord == htonl(0x05ccf0ff))
-				//if ((cmdRecv->data & 0x0111111111111111) == (cmd->data & 0x0111111111111111))
+				if (cmdRecv->synWord == htonl(0x05ccf0ff))
+				if ((cmdRecv->data & 0x0111111111111111) == (cmd->data & 0x0111111111111111))
 				{
 					qDebug() << ("\n收到%d个字节\n", nrecv);
 					if (cmd->data == htonll(0x800000C000000001))

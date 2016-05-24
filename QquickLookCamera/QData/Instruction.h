@@ -31,6 +31,7 @@ public:
 private:
 	CMOSID cmosId;
 	CMD *cmd;
+	bool SENDFLAG = false;
 
 	unsigned int m_ag_cg{ 0x01e2 };//寄存器值
 	unsigned int m_dg{ 0x0080 };//寄存器值
@@ -51,8 +52,6 @@ private:
 	std::thread m_thrSendAECRun; //线程句柄
 	std::thread m_thrSendSetDG;
 	std::thread m_thrSendSetAGCG;
-
-	bool SENDFLAG = false;
 //socket
 protected:
 	CInitSock c;//Winsock库的装入和释放
@@ -172,6 +171,7 @@ public:
 		PowerDown();
 	}
 protected:
+	void ClearFIFO();
 	//开始上传图像，自动曝光
 	void AECRun();
 	//手动曝光

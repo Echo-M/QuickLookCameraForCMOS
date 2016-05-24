@@ -193,8 +193,18 @@ void QquickLookCamera::saveFlie()
 
 void QquickLookCamera::AECRun()
 {
-	InstructionProcess instruct(Instruction::CMOSE);
-	instruct.AECRun();
+	//InstructionProcess *instruct = new InstructionProcess(Instruction::CMOS1);
+	//instruct->AECRun();
+	//delete instruct;
+	InstructionProcess *instruct1 = new InstructionProcess(Instruction::CMOSE);
+	instruct1->AECRun();
+	delete instruct1;
+	//InstructionProcess *instruct2 = new InstructionProcess(Instruction::CMOS2);
+	//instruct2->AECRun();
+	//delete instruct2;
+	//InstructionProcess *instruct3 = new InstructionProcess(Instruction::CMOS3);
+	//instruct3->AECRun();
+	//delete instruct3;
 	uploadFlag = true;
 	infoLabel->setText(tr(" | Tips: Data is alreay upload!"));
 	infoLabel->update();
@@ -227,9 +237,10 @@ void QquickLookCamera::setExpoTime(unsigned int _time)
 	else
 		expoTime = _time;
 
-	InstructionProcess instruct(Instruction::CMOSE);
+	InstructionProcess *instruct = new InstructionProcess(Instruction::CMOSE);
 	//instruct.SetDG(dg);
-	instruct.setExpoTime(expoTime);
+	instruct->setExpoTime(expoTime);
+	delete instruct;
 	//instruct.SetAGCG(ag_cg);
 
 	QString tempet = tr(" | exposure time: ");
