@@ -52,16 +52,7 @@ void ZoomedImageDataItem::process()
 {
 	std::shared_ptr<IBuffer>& inputBuffer_zero = m_inputBuffer[0].second;
 	unsigned char *buffer = new unsigned char[m_height*m_width];
-	//testing
-	unsigned char* buf = &(*buffer);
-	for (int h = 0; h < m_height; ++h)
-	{
-		for (int w = 0; w < m_width; ++w)
-		{
-			buf[h*m_width + w] = w;
-		}
-	}
-	//end testing
+
 	while (m_processing)
 	{
 		if (!inputBuffer_zero)//ÈôinputBufferÃ»ÓÐ±»×¢²á
@@ -74,7 +65,7 @@ void ZoomedImageDataItem::process()
 			if (0 != inputBuffer_zero->front(buffer, m_height*m_width))
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
-				//continue;
+				continue;
 			}
 			Zoom(m_zoomedImageBuffer[0].get(), buffer, m_ratio);
 			memcpy(m_zoomedImageBuffer[1].get(), m_zoomedImageBuffer[0].get(), m_features->linesPerFrame*m_features->payloadDataWidth);

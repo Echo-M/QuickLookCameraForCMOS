@@ -18,9 +18,19 @@ QquickLookCamera::QquickLookCamera(QWidget *parent)
 	setWindowTitle(tr("CMOS Camera System Software"));
 	setWindowIcon(QIcon("realtime.png"));
 
-	showWidget = new MyClass(this); 
-	showWidget->setMinimumSize(800, 600);
-	setCentralWidget(showWidget); 
+	imageLayout = new QGridLayout;
+	imageWidget = new QWidget;
+
+	MyClass *showWidget0 = new MyClass(Instruction::CMOSE, 0, 1, this);
+	MyClass *showWidget1 = new MyClass(Instruction::CMOS1, 0, 1, this);
+	MyClass *showWidget2 = new MyClass(Instruction::CMOS2, 0, 1, this);
+	MyClass *showWidget3 = new MyClass(Instruction::CMOS3, 0, 1, this);
+	imageLayout->addWidget(showWidget0,0,0);
+	imageLayout->addWidget(showWidget1,0,1);
+	imageLayout->addWidget(showWidget2,1,0);
+	imageLayout->addWidget(showWidget3,1,1);
+	imageWidget->setLayout(imageLayout);
+	setCentralWidget(imageWidget);
 	
 	ctrlFrame = new QFrame;
 	createControlFrame(); 
@@ -156,7 +166,7 @@ void QquickLookCamera::cerateStatus()
 	infoLabel = new QLabel;
 	infoLabel->setText(tr(" | Tips: "));
 	infoLabel->setFixedWidth(300);
-	statusBar()->addPermanentWidget(infoLabel);
+	//statusBar()->addPermanentWidget(infoLabel);
 
 	frRateLabel = new QLabel;
 	QString tempfr = tr(" | frame rate: ");
@@ -164,21 +174,21 @@ void QquickLookCamera::cerateStatus()
 	tempfr += tr(" fps");
 	frRateLabel->setText(tempfr);
 	frRateLabel->setFixedWidth(150);
-	statusBar()->addPermanentWidget(frRateLabel);
+	//statusBar()->addPermanentWidget(frRateLabel);
 
 	frLengthLabel = new QLabel;
 	QString tempfl = tr(" | frame length: ");
 	tempfl += QString::number(frLength);
 	frLengthLabel->setText(tempfl);
 	frLengthLabel->setFixedWidth(150);
-	statusBar()->addPermanentWidget(frLengthLabel);
+	//statusBar()->addPermanentWidget(frLengthLabel);
 
 	expoTimeLabel = new QLabel;
 	QString tempet = tr(" | exposure time: ");
 	tempet += QString::number(expoTime);
 	expoTimeLabel->setText(tempet);
 	expoTimeLabel->setFixedWidth(150);
-	statusBar()->addPermanentWidget(expoTimeLabel);
+	//statusBar()->addPermanentWidget(expoTimeLabel);
 }
 
 void QquickLookCamera::OpenFile()
@@ -188,7 +198,7 @@ void QquickLookCamera::OpenFile()
 }
 void QquickLookCamera::saveFlie()
 {
-	showWidget->setSaveFile();
+	//showWidget->setSaveFile();
 }
 
 void QquickLookCamera::AECRun()

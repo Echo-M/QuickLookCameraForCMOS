@@ -9,6 +9,7 @@ ImageMagnifierItem::ImageMagnifierItem(QWidget *parent, Qt::WindowFlags f, QImag
 {
 	//m_image = new QImage(m_range, QImage::Format_ARGB32);  //default range 5*5, scale to the rectangle of window
 	m_image = new QImage(m_range, strFormat);
+
     //unsigned char* bits = m_image->bits(); for (int i=0; i<25*25; ++i)   *((unsigned int*)(bits+i*4)) = (((10*i)<<8) | (0xff<<24));    
 }
 
@@ -20,17 +21,6 @@ ImageMagnifierItem::~ImageMagnifierItem()
 void ImageMagnifierItem::paintEvent(QPaintEvent *)//实现重绘，显示图像
 {
     displayModeDisplay();
-}
-void  ImageMagnifierItem::mousePressEvent(QMouseEvent *e)//单击切换显示
-{
-	if (e->button()== Qt::LeftButton )
-	{
-		emit leftMouseClicked();
-	}
-}
-void ImageMagnifierItem::mouseDoubleClickEvent(QMouseEvent *e)//双击恢复  //怎么知道这是双击-->这是QMouseEvent事件。
-{
-	emit doubleClickEvent();
 }
 void ImageMagnifierItem::setCmosNumber(int number)//设置显示通道
 {
@@ -86,8 +76,9 @@ int ImageMagnifierItem::displayModeDisplay() const
         return ERR_INTERNAL_ERROR;
 
     //fetch pixel around cursor, convert to rgba format
-    QRect rtWnd = geometry();//相对于父对象的窗口部件
-    QRect rtRange(//需要放大的矩形范围
+    QRect rtWnd = geometry();//显示区左上角坐标及显示区的长宽
+	//m_range显示图像的大小
+    QRect rtRange(
                 m_cursorPostion.x()-m_range.width()/2,
                 m_cursorPostion.y()-m_range.height()/2,
                 m_range.width(),
@@ -119,13 +110,13 @@ int ImageMagnifierItem::displayModeDisplay() const
         rtRange.setHeight(m_range.height());
     }
     //qDebug()<<rtRange<<"<-\n";
-
-    unsigned char *pixel = m_imgBuffer.get();//图像缓冲区
-	QString str;//图像上的标记字符串
+    unsigned char *pixel = m_imgBuffer.get();
+	//put sth useful information
+	QString str;
 	str.sprintf("COMS %d", cmosNumber);  //图像上标记通道
 	
-	//str.sprintf("[%d,%d, %d*%d] H:%.2f, V:%.2f", rtRange.left()*features->colSampleLevel, rtRange.top()*features->rowSampleLevel, rtRange.width(), rtRange.height(),
-	//static_cast<float>(pic.width())/rtRange.width(), static_cast<float>(pic.height())/rtRange.height());
+	//	 str.sprintf("[%d,%d, %d*%d] H:%.2f, V:%.2f", rtRange.left()*features->colSampleLevel, rtRange.top()*features->rowSampleLevel, rtRange.width(), rtRange.height(),
+	//	 static_cast<float>(pic.width())/rtRange.width(), static_cast<float>(pic.height())/rtRange.height());
 	
     if (!m_dataProvider->copyArea(rtRange.left(), rtRange.top(), rtRange.width(), rtRange.height(), pixel))
         return ERR_INVALID_PARAM; 

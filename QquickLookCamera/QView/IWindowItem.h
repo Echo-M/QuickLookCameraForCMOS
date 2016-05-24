@@ -15,13 +15,13 @@ class SaveToFile;
 
 struct WindowLayout
 {
-    int col;
-    int row;
+    int col;//column
+    int row;//row
     int colSpan{1}; //default 1
     int rowSpan{1}; //default 1
     int colStretchFactor{1}; //default 1
-	int hSizePolicy{ QSizePolicy::Minimum }; //width size Policy
-	int vSizePolicy{ QSizePolicy::Minimum }; //height
+	int hSizePolicy{ QSizePolicy::Fixed }; //width size Policy
+	int vSizePolicy{ QSizePolicy::Fixed }; //height
     int hSize; //if hSizePolicy == Fixed, Minimum, Maximum, specify the width
     int vSize; //ditto, height
 
@@ -32,28 +32,28 @@ struct WindowLayout
 class IWindowItem
 {
 public:
-    //fucntion returns int should return the enum value:
+    //function returns int should return the enum value:
     enum ReturnCode
     {
-        EXEC_SUCCESS = 0,                   //success
-        ERR_UNSUPPORTED,                //an unsupported operation
-        ERR_INVALID_PARAM,              //invalid paramerter
-        ERR_NOT_SET_DATAPTR,          //need IDataItem
-        ERR_NOT_SET_CONVERTOR,    //need PixelConvertor
-        ERR_INTERNAL_ERROR,           //internal error
-		ERR_NOT_SET_FILE
+        EXEC_SUCCESS = 0,		//success
+        ERR_UNSUPPORTED,		//an unsupported operation
+        ERR_INVALID_PARAM,		//invalid parameter
+        ERR_NOT_SET_DATAPTR,	//need IDataItem
+        ERR_NOT_SET_CONVERTOR,	//need PixelConvertor
+        ERR_INTERNAL_ERROR,		//internal error ( features of data wrong )
+		ERR_NOT_SET_FILE		//need SaveToFile to save the picture
     };
 
 protected:
-    std::shared_ptr<IDataItem> m_dataProvider{nullptr};
+    std::shared_ptr<IDataItem> m_dataProvider{nullptr}; //data provider
 	mutable std::shared_ptr<PixelConvertor> m_convertor{ nullptr };  //clone is a const function
 	mutable std::shared_ptr<SaveToFile> m_file{ nullptr };    //clone is a const function
     QColor m_bgColor{Qt::black}; //background color
-    QColor m_lineColor{Qt::darkYellow}; //
-    QColor m_fontColor{Qt::white};
+    QColor m_lineColor{Qt::darkYellow}; //line color
+    QColor m_fontColor{Qt::white}; // font color
     QColor m_gridColor{Qt::darkCyan}; //if need grid cell
 protected:
-    //if windowitem is in edit mode
+    //if IWindowItem is in edit mode
     virtual int displayModeEdit() const {return EXEC_SUCCESS;}
     //else
     virtual int displayModeDisplay() const = 0;

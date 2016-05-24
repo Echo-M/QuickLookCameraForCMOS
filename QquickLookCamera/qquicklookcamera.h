@@ -2,11 +2,12 @@
 #define QQUICKLOOKCAMERA_H
 
 #include <QMainWindow>
-#include "ui_qquicklookcamera.h"
 #include "myclass.h"
 #include "../QData/InstructionProcess.h"
 class QLabel;
 class QComboBox;
+class QLineEdit;
+class QFrame;
 
 //该类提供整个上位机的主窗口
 class QquickLookCamera : public QMainWindow
@@ -36,7 +37,8 @@ private:
 	//Ui::QquickLookCameraClass ui; //不使用UI，使用纯代码的方式添加控件
 
 	QString filename;
-	MyClass *showWidget;
+	QWidget *imageWidget;
+	QGridLayout *imageLayout;
 	QFrame *ctrlFrame;
 	QDockWidget *ctrlFrameDock;
 

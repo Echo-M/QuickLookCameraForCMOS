@@ -16,13 +16,11 @@ class ImageMagnifierItem : public QWidget, public IWindowItem
 
 protected:
     QPoint m_cursorPostion{0,0}; //zoom in center
-    QSize m_range{16,16}; //
+    QSize m_range{100,100}; //
     QImage* m_image{nullptr}; //
     std::shared_ptr<unsigned char> m_imgBuffer{nullptr};
 protected:
     virtual void paintEvent(QPaintEvent *) override;
-	void mousePressEvent(QMouseEvent *ec);   //可以用基类的mouse函数
-	void mouseDoubleClickEvent(QMouseEvent *);  
 private:
 	int cmosNumber;
 	QImage::Format strFormat;
@@ -42,14 +40,13 @@ public:
     virtual int refresh() override;
     virtual QWidget* widget() /*const*/ override {return this;}
 
-signals:
-	void leftMouseClicked();
-	void doubleClickEvent();
 public slots:
-    void onCursorPositionChanged(int x, int y)
+    void onCursorPositionChanged(int x, int y, int w, int h)
     {
-        m_cursorPostion.rx() = x;
-        m_cursorPostion.ry() = y;	
+		const FeaturesOfDataItem* features = m_dataProvider->constDataFeatures();
+
+		m_cursorPostion.rx() = features->payloadDataWidth*x / w;
+        m_cursorPostion.ry() = features->linesPerFrame*y/h;	
         QWidget::update();
     }	
     void setMagnifierRange(int width, int height); //set range of zoom in area

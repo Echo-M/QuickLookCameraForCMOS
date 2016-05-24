@@ -85,15 +85,6 @@
     <ClCompile Include="QView\Utility\PixelConvertor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ImageMagnifierItem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ImageMagnifierItem.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="QView\ImageMagnifierItem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SaveFile\SaveToFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -133,28 +124,43 @@
     <ClCompile Include="QData\ZoomedImageDataItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ImageWindowItem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ImageWindowItem.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="QView\ImageMagnifierItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ImageMagnifierItem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ImageMagnifierItem.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="QView\ImageWindowItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="qquicklookcamera.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="qquicklookcamera.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="qquicklookcamera.qrc">
       <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QView\ImageMagnifierItem.h">
-      <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="myclass.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="QView\ImageWindowItem.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QView\ImageMagnifierItem.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_qquicklookcamera.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="QData\CirQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>

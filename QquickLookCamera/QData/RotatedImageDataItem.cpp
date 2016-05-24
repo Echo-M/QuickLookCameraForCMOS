@@ -96,17 +96,9 @@ bool RotatedImageDataItem::setup(int _assWidth, int _imgWidth, int _height)
 void RotatedImageDataItem::process()
 {
 	std::shared_ptr<IBuffer>& inputBuffer_zero = m_inputBuffer[0].second;
+	std::shared_ptr<IBuffer>& outputBuffer_zero = m_outputBuffer[0].second;
 	unsigned char *buffer = new unsigned char[m_height*m_width];
-	//testing
-	unsigned char* buf = &(*buffer);
-	for (int h = 0; h<m_height; ++h)
-	{
-		for (int w = 0; w<m_width; ++w)
-		{
-			buf[h*m_width + w] = w;
-		}
-	}
-	//end testing
+	
 	while (m_processing)
 	{
 		if (!inputBuffer_zero)//ÈôinputBufferÃ»ÓÐ±»×¢²á
@@ -119,11 +111,15 @@ void RotatedImageDataItem::process()
 			if (0 != inputBuffer_zero->front(buffer, m_height*m_width))
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
-				//continue;
+				continue;
 			}
 			Rotate(m_rotatedImageBuffer[0].get(), buffer, m_angle);
 			memcpy(m_rotatedImageBuffer[1].get(), m_rotatedImageBuffer[0].get(), m_features->linesPerFrame*m_features->payloadDataWidth);
 			inputBuffer_zero->pop_front(m_height*m_width);
+			if (outputBuffer_zero)
+			{
+				outputBuffer_zero->push_back(m_rotatedImageBuffer[1].get(), m_features->linesPerFrame*m_features->payloadDataWidth);
+			}
 		}
 	}
 	
