@@ -11,62 +11,102 @@ RotatedImageDataItem::~RotatedImageDataItem()
 {
 }
 
-bool RotatedImageDataItem::setup(int assWidth, int imgWidth, int height)
+//bool RotatedImageDataItem::setup(int assWidth, int imgWidth, int height)//辅助数据宽度，变换后的宽和高
+//{
+//	if (assWidth <0 || imgWidth <= 0 || height <= 0)
+//		return false;
+//	if (imgWidth % 4 != 0) 
+//		imgWidth += 4 - imgWidth % 4;
+//	if (height % 4 != 0) 
+//		height += 4 - height % 4;
+//
+//	std::shared_ptr<unsigned char> img[2];
+//	for (int i = 0; i<2; ++i)
+//	{
+//		img[i].reset(new unsigned char[imgWidth*height]);
+//		if (!img[i])
+//			return false;
+//	}
+//
+//	//stop processing , reset image&assist data ptr, set features of width&height
+//	stop(); 
+//	for (int i = 0; i<2; ++i)
+//	{
+//		m_rotatedImageBuffer[i] = img[i];
+//	}
+//
+//	//旋转90，则高宽互换
+//	double angleRad = (double)m_angle / 180 * 3.1415926;
+//	double fcos = fabs(cos(angleRad));
+//	double fsin = fabs(sin(angleRad));
+//	m_height = abs((imgWidth*fsin - height*fcos) / (fsin*fsin - fcos*fcos));
+//	m_width = abs((imgWidth*fcos - height*fsin) / (fcos*fcos - fsin*fsin));
+//	if (m_width % 4 != 0)
+//		m_width += 4 - m_width % 4;
+//	if (m_height % 4 != 0)
+//		m_height += 4 - m_height % 4;
+//
+//	//start processing
+//	IDataItem::setup(assWidth, imgWidth, height);
+//	start();
+//
+//	return true;
+//}
+
+//辅助数据宽度，变换前的宽和高
+bool RotatedImageDataItem::setup(int _assWidth, int _imgWidth, int _height)
 {
-	if (assWidth <0 || imgWidth <= 0 || height <= 0)
+	if (_assWidth <0 || _imgWidth <= 0 || _height <= 0)
 		return false;
-	if (imgWidth % 4 != 0) 
-		imgWidth += 4 - imgWidth % 4;
-	if (height % 4 != 0) 
-		height += 4 - height % 4;
+
+	m_height = _height;
+	m_width = _imgWidth;
+
+	//求变换后的宽和高
+	double angleRad = (double)m_angle / 180 * 3.1415926;
+	double fcos = cos(angleRad);
+	double fsin = sin(angleRad);
+	int width = m_width*abs(fcos) + m_height*abs(fsin);
+	if (width % 4 != 0) width += 4 - width % 4;
+	int height = m_width*abs(fsin) + m_height*abs(fcos);
+	if (height % 4 != 0) height += 4 - height % 4;
 
 	std::shared_ptr<unsigned char> img[2];
-	for (int i = 0; i<2; ++i)
+	for (int i = 0; i < 2; ++i)
 	{
-		img[i].reset(new unsigned char[imgWidth*height]);
+		img[i].reset(new unsigned char[width*height]);
 		if (!img[i])
 			return false;
 	}
 
 	//stop processing , reset image&assist data ptr, set features of width&height
-	stop(); 
-	for (int i = 0; i<2; ++i)
+	stop();
+	for (int i = 0; i < 2; ++i)
 	{
 		m_rotatedImageBuffer[i] = img[i];
 	}
 
-	//旋转90，则高宽互换
-	double angleRad = (double)m_angle / 180 * 3.1415926;
-	double fcos = fabs(cos(angleRad));
-	double fsin = fabs(sin(angleRad));
-	m_height = abs((imgWidth*fsin - height*fcos) / (fsin*fsin - fcos*fcos));
-	m_width = abs((imgWidth*fcos - height*fsin) / (fcos*fcos - fsin*fsin));
-	if (m_width % 4 != 0)
-		m_width += 4 - m_width % 4;
-	if (m_height % 4 != 0)
-		m_height += 4 - m_height % 4;
 
 	//start processing
-	IDataItem::setup(assWidth, imgWidth, height);
+	IDataItem::setup(_assWidth, width, height);
 	start();
 
 	return true;
 }
-
 void RotatedImageDataItem::process()
 {
 	std::shared_ptr<IBuffer>& inputBuffer_zero = m_inputBuffer[0].second;
 	unsigned char *buffer = new unsigned char[m_height*m_width];
-	////testing
-	//unsigned char* buf = &(*buffer);
-	//for (int h = 0; h<m_height; ++h)
-	//{
-	//	for (int w = 0; w<m_width; ++w)
-	//	{
-	//		buf[h*m_width + w] = w;
-	//	}
-	//}
-	////end testing
+	//testing
+	unsigned char* buf = &(*buffer);
+	for (int h = 0; h<m_height; ++h)
+	{
+		for (int w = 0; w<m_width; ++w)
+		{
+			buf[h*m_width + w] = w;
+		}
+	}
+	//end testing
 	while (m_processing)
 	{
 		if (!inputBuffer_zero)//若inputBuffer没有被注册
@@ -79,7 +119,7 @@ void RotatedImageDataItem::process()
 			if (0 != inputBuffer_zero->front(buffer, m_height*m_width))
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
-				continue;
+				//continue;
 			}
 			Rotate(m_rotatedImageBuffer[0].get(), buffer, m_angle);
 			memcpy(m_rotatedImageBuffer[1].get(), m_rotatedImageBuffer[0].get(), m_features->linesPerFrame*m_features->payloadDataWidth);

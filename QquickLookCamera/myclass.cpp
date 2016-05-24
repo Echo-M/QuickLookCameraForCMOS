@@ -29,10 +29,14 @@ MyClass::MyClass(QWidget *parent,Qt::WindowFlags f)
 	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider1)->registerOutputBuffer(0, m_cmosImageData1);
 	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider2)->registerOutputBuffer(0, m_cmosImageData2);
 	std::dynamic_pointer_cast<ImageDataItem>(m_dataProvider3)->registerOutputBuffer(0, m_cmosImageData3);
-	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider0)->registerInputBuffer(0, m_cmosImageData0);
+	/*std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider0)->registerInputBuffer(0, m_cmosImageData0);
 	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider1)->registerInputBuffer(0, m_cmosImageData1);
 	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider2)->registerInputBuffer(0, m_cmosImageData2);
-	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider3)->registerInputBuffer(0, m_cmosImageData3);
+	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider3)->registerInputBuffer(0, m_cmosImageData3);*/
+	std::dynamic_pointer_cast<ZoomedImageDataItem>(m_zoomedDataProvider0)->registerInputBuffer(0, m_cmosImageData0);
+	std::dynamic_pointer_cast<ZoomedImageDataItem>(m_zoomedDataProvider1)->registerInputBuffer(0, m_cmosImageData1);
+	std::dynamic_pointer_cast<ZoomedImageDataItem>(m_zoomedDataProvider2)->registerInputBuffer(0, m_cmosImageData2);
+	std::dynamic_pointer_cast<ZoomedImageDataItem>(m_zoomedDataProvider3)->registerInputBuffer(0, m_cmosImageData3);
 
 	//开始上传数据
 	m_inputSrc0->start();
@@ -45,10 +49,15 @@ MyClass::MyClass(QWidget *parent,Qt::WindowFlags f)
 	m_dataProvider2->setup(20, 1280, 1024);
 	m_dataProvider3->setup(20, 1280, 1024);
 	//开始图像旋转
-	m_rotatedDataProvider0->setup(20, 1024, 1280);//
-	m_rotatedDataProvider1->setup(20, 1024, 1280);
-	m_rotatedDataProvider2->setup(20, 1024, 1280);
-	m_rotatedDataProvider3->setup(20, 1024, 1280);
+	//m_rotatedDataProvider0->setup(20, 1280, 1024);//
+	//m_rotatedDataProvider1->setup(20, 1280, 1024);
+	//m_rotatedDataProvider2->setup(20, 1280, 1024);
+	//m_rotatedDataProvider3->setup(20, 1280, 1024);
+	//开始图像缩放
+	m_zoomedDataProvider0->setup(20, 1280, 1024);//
+	m_zoomedDataProvider1->setup(20, 1280, 1024);
+	m_zoomedDataProvider2->setup(20, 1280, 1024);
+	m_zoomedDataProvider3->setup(20, 1280, 1024);
 
 	//设置通道编号
 	m_magnifier0->setCmosNumber(0);
@@ -57,18 +66,22 @@ MyClass::MyClass(QWidget *parent,Qt::WindowFlags f)
 	m_magnifier2->setCmosNumber(2);
 	m_magnifier3->setCmosNumber(3);
     //窗口绑定数据指针，初始化m_dataProvider
-	m_magnifier0->setDataItemPtr(m_rotatedDataProvider0);//
-	m_magnifier00->setDataItemPtr(m_rotatedDataProvider0);
-	m_magnifier1->setDataItemPtr(m_rotatedDataProvider1);
-	m_magnifier2->setDataItemPtr(m_rotatedDataProvider2);
-	m_magnifier3->setDataItemPtr(m_rotatedDataProvider3);
+	m_magnifier0->setDataItemPtr(m_zoomedDataProvider0);//
+	m_magnifier00->setDataItemPtr(m_zoomedDataProvider0);
+	m_magnifier1->setDataItemPtr(m_zoomedDataProvider1);
+	m_magnifier2->setDataItemPtr(m_zoomedDataProvider2);
+	m_magnifier3->setDataItemPtr(m_zoomedDataProvider3);
+	const FeaturesOfDataItem* features0 = m_zoomedDataProvider0->constDataFeatures();
+	const FeaturesOfDataItem* features1 = m_zoomedDataProvider1->constDataFeatures();
+	const FeaturesOfDataItem* features2 = m_zoomedDataProvider2->constDataFeatures();
+	const FeaturesOfDataItem* features3 = m_zoomedDataProvider3->constDataFeatures();
 	//m_magnifier0->setDataItemPtr(m_dataProvider0);//
 	//m_magnifier00->setDataItemPtr(m_dataProvider0);
 	//m_magnifier1->setDataItemPtr(m_dataProvider1);
 	//m_magnifier2->setDataItemPtr(m_dataProvider2);
 	//m_magnifier3->setDataItemPtr(m_dataProvider3);
 	//窗口绑定数据转换指针，初始化m_convertor
-	m_magnifier0->setConvertor(std::shared_ptr<PixelConvertor>(new PixelBayerToRGB));   //显示彩色图像时，要改窗口构造函数
+	m_magnifier0->setConvertor(std::shared_ptr<PixelConvertor>(new PixelBayerToRGB));   //显示彩色图像时，要改窗口构造函数f
 	m_magnifier00->setConvertor(std::shared_ptr<PixelConvertor>(new Pixel8To32));//放大灰度显示，对比
 	m_magnifier1->setConvertor(std::shared_ptr<PixelConvertor>(new Pixel8To32));
 	m_magnifier2->setConvertor(std::shared_ptr<PixelConvertor>(new Pixel8To32));
@@ -81,11 +94,11 @@ MyClass::MyClass(QWidget *parent,Qt::WindowFlags f)
 	m_magnifier3->setSave(std::shared_ptr<SaveToFile>(new SaveToBmpGray));
 
 	//设置窗口大小
-	m_magnifier0->setMagnifierRange(1024, 1280);
-	m_magnifier00->setMagnifierRange(1024, 1280);
-	m_magnifier1->setMagnifierRange(1024, 1280);
-	m_magnifier2->setMagnifierRange(1024, 1280);
-	m_magnifier3->setMagnifierRange(1024, 1280);
+	m_magnifier0->setMagnifierRange(features0->payloadDataWidth, features0->linesPerFrame);
+	m_magnifier00->setMagnifierRange(features0->payloadDataWidth, features0->linesPerFrame);
+	m_magnifier1->setMagnifierRange(features1->payloadDataWidth, features1->linesPerFrame);
+	m_magnifier2->setMagnifierRange(features2->payloadDataWidth, features2->linesPerFrame);
+	m_magnifier3->setMagnifierRange(features3->payloadDataWidth, features3->linesPerFrame);
 	m_magnifier00->setWindowFlags(Qt::Window);
 	m_magnifier00->show();//通道0，放大图
 	m_magnifier00->resize(420, 320);

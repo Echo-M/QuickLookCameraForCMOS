@@ -7,7 +7,7 @@ InstructionProcess::InstructionProcess(Instruction::CMOSID _cmosId) :
 	port_far_send(4567),
 	port_local_recv(3955),
 	ip_local("192.168.1.2"),
-	ip_far("192.168.1.2")
+	ip_far("192.168.1.1")
 {
 }
 

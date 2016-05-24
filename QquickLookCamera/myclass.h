@@ -5,6 +5,7 @@
 #include "./QData/InputCMOS.h"
 #include "./QData/ImageDataItem.h"
 #include "QData\RotatedImageDataItem.h"
+#include "QData/ZoomedImageDataItem.h"
 #include "./QView/IWindowItem.h"
 #include "./QView/Utility/Pixel8To32.h"
 #include "./QView/Utility/PixelBayerToRGB.h"
@@ -34,20 +35,21 @@ protected:
 	std::shared_ptr<IDataItem> m_dataProvider2{ new ImageDataItem };
 	std::shared_ptr<IDataItem> m_dataProvider3{ new ImageDataItem };
 
-	std::shared_ptr<IDataItem> m_rotatedDataProvider0{ new RotatedImageDataItem };
-	std::shared_ptr<IDataItem> m_rotatedDataProvider1{ new RotatedImageDataItem };
-	std::shared_ptr<IDataItem> m_rotatedDataProvider2{ new RotatedImageDataItem };
-	std::shared_ptr<IDataItem> m_rotatedDataProvider3{ new RotatedImageDataItem };
+	/*std::shared_ptr<IDataItem> m_rotatedDataProvider0{ new RotatedImageDataItem(0) };
+	std::shared_ptr<IDataItem> m_rotatedDataProvider1{ new RotatedImageDataItem(10) };
+	std::shared_ptr<IDataItem> m_rotatedDataProvider2{ new RotatedImageDataItem(180) };
+	std::shared_ptr<IDataItem> m_rotatedDataProvider3{ new RotatedImageDataItem(270) };*/
 
-	/*std::shared_ptr<IDataItem> m_rotateDateProvider0{ new rotateDateProvider };
-	std::shared_ptr<IDataItem> m_rotateDateProvider1{ new rotateDateProvider };
-	std::shared_ptr<IDataItem> m_rotateDateProvider2{ new rotateDateProvider };
-	std::shared_ptr<IDataItem> m_rotateDateProvider3{ new rotateDateProvider };*/
+	std::shared_ptr<IDataItem> m_zoomedDataProvider0{ new ZoomedImageDataItem(0.1) };
+	std::shared_ptr<IDataItem> m_zoomedDataProvider1{ new ZoomedImageDataItem(0.5) };
+	std::shared_ptr<IDataItem> m_zoomedDataProvider2{ new ZoomedImageDataItem(1) };
+	std::shared_ptr<IDataItem> m_zoomedDataProvider3{ new ZoomedImageDataItem(2) };
 
 	IDataProcessUnit* m_inputSrc0{ new InputCMOS(3956, inet_addr("192.168.1.2")) };
 	IDataProcessUnit* m_inputSrc1{ new InputCMOS(3957, inet_addr("192.168.1.2")) };	
 	IDataProcessUnit* m_inputSrc2{ new InputCMOS(3958, inet_addr("192.168.1.2")) };
 	IDataProcessUnit* m_inputSrc3{ new InputCMOS(3959, inet_addr("192.168.1.2")) };
+
 	std::shared_ptr<IBuffer> m_cmosData0{ new CCirQueue };//输入数据
 	std::shared_ptr<IBuffer> m_cmosData1{ new CCirQueue };//输入数据
 	std::shared_ptr<IBuffer> m_cmosData2{ new CCirQueue };//输入数据

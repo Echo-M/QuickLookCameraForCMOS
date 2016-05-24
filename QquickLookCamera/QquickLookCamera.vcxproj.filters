@@ -130,14 +130,8 @@
     <ClCompile Include="QView\Utility\PixelBayerToRGB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QView\ImageWindowItem.cpp">
+    <ClCompile Include="QData\ZoomedImageDataItem.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ImageWindowItem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ImageWindowItem.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,9 +148,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="myclass.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QView\ImageWindowItem.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -222,6 +213,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QView\Utility\PixelBayerToRGB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QData\ZoomedImageDataItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
