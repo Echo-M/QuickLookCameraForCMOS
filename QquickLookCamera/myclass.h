@@ -25,16 +25,20 @@ class MyClass : public QWidget
 	Q_OBJECT
 
 public:
-	MyClass(int _cmosId,int _angle=0,float _ratio=1, QWidget *parent = 0, Qt::WindowFlags f = 0);
+	MyClass(int _cmosId, int _angle, QWidget *parent = 0, Qt::WindowFlags f = 0);
 	~MyClass();
 	void setSaveFile();
+protected:
+	void onMousePressed()
+	{
+		m_magnifier->show();
+	}
 private:
 	int cmosId;
 	int m_assWidth;
 	int m_height;
 	int m_imgWidth;
 	int m_angle;//需要旋转的角度
-	float m_ratio;//需要放大的倍数
 	const int m_BufPicNum;//缓冲区存储多少张图像的数据
 	QGridLayout *gridLayout{ new QGridLayout(this) };
 protected:
@@ -44,14 +48,10 @@ protected:
 	std::shared_ptr<IDataItem> m_dataProvider{ new ImageDataItem };
 	//旋转后数据的提供对象RotatedImageDataItem
 	std::shared_ptr<IDataItem> m_rotatedDataProvider{ new RotatedImageDataItem(m_angle) };
-	//缩放后数据的提供对象ZoomedImageDataItem
-	std::shared_ptr<IDataItem> m_zoomedDataProvider{ new ZoomedImageDataItem(m_ratio) };
 	//输入的完整数据
 	std::shared_ptr<IBuffer> m_cmosData{ new CCirQueue };
 	//解析后的完整图像帧
 	std::shared_ptr<IBuffer> m_cmosImageData{ new CCirQueue };//图像帧数据
-	//旋转后的图像帧数据
-	std::shared_ptr<IBuffer> m_cmosRotatedImageData{ new CCirQueue };
 
 protected:
 	QTimer* m_refreshTimer{ nullptr };
@@ -59,8 +59,6 @@ protected:
 	ImageWindowItem *m_window{ new ImageWindowItem };
 	ImageMagnifierItem *m_magnifier{ new ImageMagnifierItem };
 
-signals:
-	void clicked();
 private slots :
 	//放大显示
     //void showMagnifier();

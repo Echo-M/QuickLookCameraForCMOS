@@ -41,12 +41,11 @@ public:
     virtual QWidget* widget() /*const*/ override {return this;}
 
 public slots:
-    void onCursorPositionChanged(int x, int y, int w, int h)
+    void onCursorPositionChanged(int x, int y)
     {
-		const FeaturesOfDataItem* features = m_dataProvider->constDataFeatures();
 
-		m_cursorPostion.rx() = features->payloadDataWidth*x / w;
-        m_cursorPostion.ry() = features->linesPerFrame*y/h;	
+		m_cursorPostion.rx() = x;
+        m_cursorPostion.ry() = y;	
         QWidget::update();
     }	
     void setMagnifierRange(int width, int height); //set range of zoom in area

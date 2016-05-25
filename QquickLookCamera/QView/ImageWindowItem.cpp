@@ -11,7 +11,6 @@ ImageWindowItem::ImageWindowItem(QWidget *parent, Qt::WindowFlags f, QImage::For
 	m_image = new QImage(m_range, strFormat);
 	setMouseTracking(true);//鼠标没有被按下，窗口也会接受到鼠标移动事件
 	connect(this, &ImageWindowItem::mouseMoved, this, &ImageWindowItem::onMouseMoved);
-	connect(this, &ImageWindowItem::mousePressed, this, &ImageWindowItem::leftMouseButtonDown);
     //unsigned char* bits = m_image->bits(); for (int i=0; i<25*25; ++i)   *((unsigned int*)(bits+i*4)) = (((10*i)<<8) | (0xff<<24));    
 }
 
@@ -25,7 +24,10 @@ void ImageWindowItem::onMouseMoved(const QPoint &absPos)
 {
 	// qDebug()<<absPos;
 	QRect rtWnd = geometry();//显示区左上角坐标及显示区的长宽
-	emit cursorPositionChanged(absPos.x(), absPos.y(),rtWnd.width(),rtWnd.height());
+	const FeaturesOfDataItem* features = m_dataProvider->constDataFeatures();
+	m_mousePostion.rx() = features->payloadDataWidth*absPos.x() / rtWnd.width();
+	m_mousePostion.ry() = features->payloadDataWidth*absPos.y() / rtWnd.height();
+	emit cursorPositionChanged(m_mousePostion.x(),m_mousePostion.y());
 }
 
 void ImageWindowItem::paintEvent(QPaintEvent *)//实现重绘，显示图像
@@ -138,7 +140,7 @@ int ImageWindowItem::displayModeDisplay() const
     unsigned char *pixel = m_imgBuffer.get();
 	//put sth useful information
 	QString str;
-	str.sprintf("COMS %d", cmosNumber);  //图像上标记通道
+	str.sprintf("COMS %d (%d,%d)", cmosNumber,m_mousePostion.x(),m_mousePostion.y());  //图像上标记通道
 	
 	//	 str.sprintf("[%d,%d, %d*%d] H:%.2f, V:%.2f", rtRange.left()*features->colSampleLevel, rtRange.top()*features->rowSampleLevel, rtRange.width(), rtRange.height(),
 	//	 static_cast<float>(pic.width())/rtRange.width(), static_cast<float>(pic.height())/rtRange.height());

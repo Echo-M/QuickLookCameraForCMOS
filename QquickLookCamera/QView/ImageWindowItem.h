@@ -15,7 +15,8 @@ class ImageWindowItem : public QWidget, public IWindowItem
     Q_OBJECT
 
 protected:
-    QPoint m_cursorPostion{0,0}; //zoom in center
+	QPoint m_cursorPostion{ 0, 0 }; //zoom in center
+	QPoint m_mousePostion{ 0, 0 };
     QSize m_range{16,16}; //
     QImage* m_image{nullptr}; //
     std::shared_ptr<unsigned char> m_imgBuffer{nullptr};
@@ -30,12 +31,7 @@ protected:
 	//鼠标按下时，发送字符串"(x,y)"，x和y分别是横纵坐标
 	void mousePressEvent(QMouseEvent *ev)
 	{
-		QString str = "(" + QString::number(ev->x()) + "," + QString::number(ev->y()) + ")";
-		emit mousePressed(str);
-	}
-	void leftMouseButtonDown(QString str2)
-	{
-		emit displayPressMousePostion(str2);
+		emit mousePressed();
 	}
 private:
 	int cmosNumber;
@@ -58,11 +54,11 @@ public:
 
 
 signals:
-	void cursorPositionChanged(int x, int y, int w, int h); //when mouse pos changed
+	void cursorPositionChanged(int x, int y); //when mouse pos changed
 	void displayPressMousePostion(QString str); //when mouse pressed
 signals:
 	void mouseMoved(const QPoint& absolutePositon);
-	void mousePressed(QString str1);
+	void mousePressed();
 public:	
     void setMagnifierRange(int width, int height); //set range of zoom in area
 

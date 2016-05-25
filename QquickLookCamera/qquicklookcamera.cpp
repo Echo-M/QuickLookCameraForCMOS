@@ -21,10 +21,10 @@ QquickLookCamera::QquickLookCamera(QWidget *parent)
 	imageLayout = new QGridLayout;
 	imageWidget = new QWidget;
 
-	MyClass *showWidget0 = new MyClass(Instruction::CMOSE, 0, 1, this);
-	MyClass *showWidget1 = new MyClass(Instruction::CMOS1, 0, 1, this);
-	MyClass *showWidget2 = new MyClass(Instruction::CMOS2, 0, 1, this);
-	MyClass *showWidget3 = new MyClass(Instruction::CMOS3, 0, 1, this);
+	MyClass *showWidget0 = new MyClass(Instruction::CMOSE, 0, this);
+	MyClass *showWidget1 = new MyClass(Instruction::CMOS1, 10, this);
+	MyClass *showWidget2 = new MyClass(Instruction::CMOS2, 90, this);
+	MyClass *showWidget3 = new MyClass(Instruction::CMOS3, 180, this);
 	imageLayout->addWidget(showWidget0,0,0);
 	imageLayout->addWidget(showWidget1,0,1);
 	imageLayout->addWidget(showWidget2,1,0);
