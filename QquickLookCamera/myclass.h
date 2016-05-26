@@ -25,16 +25,16 @@ class MyClass : public QWidget
 	Q_OBJECT
 
 public:
-	MyClass(int _cmosId, int _angle, QWidget *parent = 0, Qt::WindowFlags f = 0);
+	MyClass(Instruction::CMOSID _cmosId, QWidget *parent = 0, Qt::WindowFlags f = 0);
 	~MyClass();
 	void setSaveFile();
 protected:
-	void onMousePressed()
+	void onMouseDoubleClicked()
 	{
 		m_magnifier->show();
 	}
 private:
-	int cmosId;
+	Instruction::CMOSID cmosId;
 	int m_assWidth;
 	int m_height;
 	int m_imgWidth;

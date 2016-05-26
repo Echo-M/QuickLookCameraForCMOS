@@ -110,7 +110,25 @@ void Instruction::ClearFIFO()
 	cmd->form = htons(0x0B00);
 	cmd->timeStamp = htons(0x0000);
 	cmd->checkSum = htons(0x0000);
-	cmd->data = htonll(0x0000000100000000);
+	switch (cmosId)
+	{
+	case NoCMOS:
+		break;
+	case CMOSE:
+		cmd->data = htonll(0x0000000800000000);
+		break;
+	case CMOS1:
+		cmd->data = htonll(0x0000000400000000);
+		break;
+	case CMOS2:
+		cmd->data = htonll(0x0000000200000000);
+		break;
+	case CMOS3:
+		cmd->data = htonll(0x0000000100000000);
+		break;
+	default:
+		break;
+	}
 
 	::sendto(sock_send, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_far_send, sizeof(addr_far_send));
 	cmdCounter++;
@@ -247,7 +265,8 @@ void Instruction::PowerUp()
 	cmd->checkSum = htons(0x0000);
 	cmd->data = htonll(0x0000000100000000);
 
-	::sendto(sock_send, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_far_send, sizeof(addr_far_send));
+	for (int i = 0; i < 10;++i)
+		::sendto(sock_send, (char*)cmd, sizeof(CMD), 0, (sockaddr*)&addr_far_send, sizeof(addr_far_send));
 	cmdCounter++;
 
 	//recvSemaphore.signal();

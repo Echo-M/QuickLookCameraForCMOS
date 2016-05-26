@@ -2,11 +2,31 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QDebug>
+#include <QInputDialog>
+#include <QLineEdit>
 
 ImageWindowItem::ImageWindowItem(QWidget *parent, Qt::WindowFlags f, QImage::Format str)
     : QWidget(parent, f),
 	strFormat(str)
 {
+	startAction = new QAction("start upload", this);
+	stopAction = new QAction("stop upload", this);
+	ag_cgAction = new QAction("set ag_cg", this);
+	dgAction = new QAction("set dg", this);
+	expoAction = new QAction("set exposure time", this);
+	fpsAction = new QAction("set frame rate", this);
+	menu->addAction(startAction);
+	menu->addAction(stopAction);
+	menu->addAction(fpsAction);
+	menu->addAction(expoAction);
+	menu->addAction(ag_cgAction);
+	menu->addAction(dgAction);
+	connect(startAction, &QAction::triggered, this, &ImageWindowItem::onStartActionTriggerd);
+	connect(stopAction, &QAction::triggered, this, &ImageWindowItem::onStopActionTriggerd);
+	connect(ag_cgAction, &QAction::triggered, this, &ImageWindowItem::onAg_cgActionTriggerd);
+	connect(dgAction, &QAction::triggered, this, &ImageWindowItem::onDgActionTriggerd);
+	connect(fpsAction, &QAction::triggered, this, &ImageWindowItem::onFpsActionTriggerd);
+	connect(expoAction, &QAction::triggered, this, &ImageWindowItem::onExpoActionTriggerd);
 	//m_image = new QImage(m_range, QImage::Format_ARGB32);  //default range 5*5, scale to the rectangle of window
 	m_image = new QImage(m_range, strFormat);
 	setMouseTracking(true);//鼠标没有被按下，窗口也会接受到鼠标移动事件
@@ -19,6 +39,129 @@ ImageWindowItem::~ImageWindowItem()
 
 }
 
+void ImageWindowItem::onAg_cgActionTriggerd()
+{
+	if (!uploadFlag)
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
+		return;
+	}
+
+	InstructionProcess instruct(cmosNumber);
+
+	QStringList list;
+	list << tr("1.00") << tr("1.14") << tr("1.33") << tr("1.60") << tr("2.00") << tr("2.29") << tr("2.67") << tr("3.20") << tr("4.00") << tr("5.33") << tr("8.00");
+	bool ok;
+	int listNum;
+	if (m_ag_cg == 1.00) listNum = 0;
+	else if (m_ag_cg == 1.14) listNum = 1;
+	else if (m_ag_cg == 1.33) listNum = 2;
+	else if (m_ag_cg == 1.60) listNum = 3;
+	else if (m_ag_cg == 2.00) listNum = 4;
+	else if (m_ag_cg == 2.29) listNum = 5;
+	else if (m_ag_cg == 2.67) listNum = 6;
+	else if (m_ag_cg == 3.20) listNum = 7;
+	else if (m_ag_cg == 4.00) listNum = 8;
+	else if (m_ag_cg == 5.33) listNum = 9;
+	else if (m_ag_cg == 8.00) listNum = 10;
+	QString valueStr = QInputDialog::getItem(this, tr("AG&CG setting"), tr("input total gain"), list, listNum, false, &ok);
+	if (ok&&!valueStr.isEmpty())
+	{
+		m_ag_cg = valueStr.toFloat(&ok);
+		if(!instruct.SetAGCG(m_ag_cg))
+		{
+			QMessageBox::critical(this, tr("Error"), tr("Failed to set AG_CG!"));
+			return;
+		}
+		uploadFlag = true;
+	}
+}
+void ImageWindowItem::onDgActionTriggerd()
+{
+	if (!uploadFlag)
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
+		return;
+	}
+	InstructionProcess instruct(cmosNumber);
+
+	bool ok;
+	double value = QInputDialog::getDouble(this, tr("digital gain setting"), tr("input digital gain:"), m_dg, 0, 10, 1, &ok);//范围0-10,默认3.0
+	if (ok)
+	{
+		m_dg = value;
+		if(!instruct.SetDG(m_dg))
+		{
+			QMessageBox::critical(this, tr("Error"), tr("Failed to set DG!"));
+			return;
+		}
+		uploadFlag = true;
+	}
+}
+void ImageWindowItem::onExpoActionTriggerd()
+{
+	if (!uploadFlag)
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
+		return;
+	}
+	InstructionProcess instruct(cmosNumber);
+
+	bool ok;
+	int value = QInputDialog::getInt(this, tr("exposure time setting"), tr("input exposure time:"), m_expoTime, 0, 180000 / m_frRate, 1, &ok);
+	if (ok)
+	{
+		m_expoTime = value;
+		if(!instruct.setExpoTime(m_expoTime))
+		{
+			QMessageBox::critical(this, tr("Error"), tr("Failed to set exposure time!"));
+			return;
+		}
+		uploadFlag = true;
+	}
+}
+void ImageWindowItem::onFpsActionTriggerd()
+{
+	if (!uploadFlag)
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
+		return;
+	}
+	InstructionProcess instruct(cmosNumber);
+
+	bool ok;
+	int value = QInputDialog::getInt(this, tr("frame rate setting"), tr("input fps:"), m_frRate, 0, 50, 1, &ok);
+	if (ok)
+	{
+		m_frRate = value;
+		if (!instruct.SetFPS(m_frRate))
+		{
+			QMessageBox::critical(this, tr("Error"), tr("Failed to set frame rate!"));
+			return;
+		}
+		uploadFlag = true;
+	}
+}
+void ImageWindowItem::onStartActionTriggerd()
+{
+	InstructionProcess instruct(cmosNumber);
+	if(!instruct.AECRun())
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Failed to upload data!"));
+		return;
+	}
+	uploadFlag = true;
+}
+void ImageWindowItem::onStopActionTriggerd()
+{
+	InstructionProcess instruct(cmosNumber);
+	if(!instruct.Stop())
+	{
+		QMessageBox::critical(this, tr("Error"), tr("Failed to stop uploading!"));
+		return;
+	}
+	uploadFlag = false;
+}
 
 void ImageWindowItem::onMouseMoved(const QPoint &absPos)
 {
@@ -49,7 +192,7 @@ void ImageWindowItem::paintEvent(QPaintEvent *)//实现重绘，显示图像
 //{
 //	emit doubleClickEvent();
 //}
-void ImageWindowItem::setCmosNumber(int number)//设置显示通道
+void ImageWindowItem::setCmosNumber(Instruction::CMOSID number)//设置显示通道
 {
 	cmosNumber = number;
 }
@@ -140,7 +283,7 @@ int ImageWindowItem::displayModeDisplay() const
     unsigned char *pixel = m_imgBuffer.get();
 	//put sth useful information
 	QString str;
-	str.sprintf("COMS %d (%d,%d)", cmosNumber,m_mousePostion.x(),m_mousePostion.y());  //图像上标记通道
+	str.sprintf("COMS %d (%d,%d)", cmosNumber,m_mousePostion.x(),m_mousePostion.y());  //图像上标记通道和当前坐标（相对于图像1280*1024）
 	
 	//	 str.sprintf("[%d,%d, %d*%d] H:%.2f, V:%.2f", rtRange.left()*features->colSampleLevel, rtRange.top()*features->rowSampleLevel, rtRange.width(), rtRange.height(),
 	//	 static_cast<float>(pic.width())/rtRange.width(), static_cast<float>(pic.height())/rtRange.height());

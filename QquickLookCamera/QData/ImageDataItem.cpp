@@ -70,21 +70,21 @@ void ImageDataItem::process()
     
     std::shared_ptr<IBuffer>& inputBuffer_zero = m_inputBuffer[0].second;  //从缓冲区内取数据，然后去帧头
 
-	//start testing
-	std::shared_ptr<IBuffer>& outputBuffer_zero = m_outputBuffer[0].second;
-	unsigned char *temp = new unsigned char[1280 * 1024]; 
-	for (int i = 0; i < 1280 * 1024; ++i)
-		temp[i] = i;
-	//end test
+	////start testing
+	//std::shared_ptr<IBuffer>& outputBuffer_zero = m_outputBuffer[0].second;
+	//unsigned char *temp = new unsigned char[1280 * 1024]; 
+	//for (int i = 0; i < 1280 * 1024; ++i)
+	//	temp[i] = i;
+	////end test
 
 	CMOS_FRAME_HEAD* pkgHeader = nullptr;
     while (m_processing)
     {
 
-		//start testing
-		outputBuffer_zero->push_back(temp, m_features->linesPerFrame*imgLineSize);
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		//end test
+		////start testing
+		//outputBuffer_zero->push_back(temp, m_features->linesPerFrame*imgLineSize);
+		//std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		////end test
 		
 		if (!inputBuffer_zero)//若inputBuffer没有被注册
         {

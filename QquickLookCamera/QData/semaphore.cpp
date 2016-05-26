@@ -9,5 +9,5 @@ semaphore::~semaphore()
 {
 }
 
-semaphore sendSemaphore(1);
+semaphore sendSemaphore(0);
 semaphore recvSemaphore(0);

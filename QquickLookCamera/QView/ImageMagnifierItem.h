@@ -43,7 +43,6 @@ public:
 public slots:
     void onCursorPositionChanged(int x, int y)
     {
-
 		m_cursorPostion.rx() = x;
         m_cursorPostion.ry() = y;	
         QWidget::update();
