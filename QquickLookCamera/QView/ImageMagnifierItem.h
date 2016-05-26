@@ -30,6 +30,7 @@ protected:
 
 public:
 	virtual int saveToFile() const override;
+	virtual void setSavePath(QString fpath) override;
 
 public:
 	ImageMagnifierItem(QWidget* parent = nullptr, Qt::WindowFlags f = 0, QImage::Format str = QImage::Format_ARGB32);//不带默认形参的只能放在带默认形参的前面
@@ -43,7 +44,6 @@ public:
 public slots:
     void onCursorPositionChanged(int x, int y)
     {
-
 		m_cursorPostion.rx() = x;
         m_cursorPostion.ry() = y;	
         QWidget::update();

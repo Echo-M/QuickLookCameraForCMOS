@@ -36,6 +36,10 @@ int ImageMagnifierItem::setDataItemPtr(std::shared_ptr<IDataItem>& ptr)
    return EXEC_SUCCESS;
 }
 
+void ImageMagnifierItem::setSavePath(QString fpath)
+{
+	m_savePath = fpath;
+}
 int ImageMagnifierItem::saveToFile() const
 {
 	if (!m_file)
@@ -49,18 +53,18 @@ int ImageMagnifierItem::saveToFile() const
 	m_dataProvider->copyArea(0, 0, m_range.width(), m_range.height(), buffer);
 
 	std::string name;
-	char temp[10];
-	sprintf_s(temp, 10, "COMS%d", cmosNumber);
+	name += "CMOS";
+	char temp = cmosNumber + 48;
 	name += temp;
-	
+
 	if (cmosNumber == 0)
 	{
 		m_convertor->convert(bufferConverted, buffer, m_range.height(), m_range.width());
-		m_file->save(bufferConverted, m_range.height(), m_range.width(), /*"../QquickLookCamera/BMP/"*/"C:\\Users\\CMOS\\Desktop\\MultiCOMS\\BMP\\", name);
+		m_file->save(bufferConverted, m_range.height(), m_range.width(), m_savePath.toStdString(), name);
 	}
 	else  //灰度图像直接存储原始bayer(8为深度)数据   //如果全部转换后存储，8->32转换有错。
-		m_file->save(buffer, m_range.height(), m_range.width(), "C:\\Users\\CMOS\\Desktop\\MultiCOMS\\BMP\\", name);  //不能为空指针，否则访问地址出错，而且放在displayModeDisplay()会实时保存
-	
+		m_file->save(buffer, m_range.height(), m_range.width(), m_savePath.toStdString(), name);  //不能为空指针，否则访问地址出错，而且放在displayModeDisplay()会实时保存
+
 	delete buffer;
 	delete bufferConverted;
 }

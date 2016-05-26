@@ -8,7 +8,7 @@ class SaveToBmp24:public SaveToFile
 public:
 	SaveToBmp24();
 	~SaveToBmp24();
-	bool save(const unsigned char* src, int height, int width, std::string path, std::string name = "") override;
+	void save(const unsigned char* src, int height, int width, std::string path, std::string name = "") override;
 };
 
 #endif

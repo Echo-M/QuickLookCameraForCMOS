@@ -18,56 +18,43 @@ public:
 	~QquickLookCamera();
 
 	//创建相机控制子窗口
-	void createControlFrame();
+	//void createControlFrame();
 	//创建状态栏
-	void cerateStatus();
+	//void cerateStatus();
 
-public slots :
-	void OpenFile();
-	void saveFlie();
-	void AECRun();
-	void Stop();
-	void setExpoTime(unsigned int _time);
-	void setFrRate(int _rate);
-	void setAGCG(float _totalGain);
-	void setDG(float _dg);
-	void AGCGBoxChanged();
+//public slots :
+	////void OpenFile();
+	//void saveFlie();
+	//void AECRun();
+	//void Stop();
+	//void setExpoTime(unsigned int _time);
+	//void setFrRate(int _rate);
+	//void setAGCG(float _totalGain);
+	//void setDG(float _dg);
+	//void AGCGBoxChanged();
 
 private: 
-	//Ui::QquickLookCameraClass ui; //不使用UI，使用纯代码的方式添加控件
-
-	QString filename;
+//	//Ui::QquickLookCameraClass ui; //不使用UI，使用纯代码的方式添加控件
+//
+//	QString filename;
 	QWidget *imageWidget;
 	QGridLayout *imageLayout;
-	QFrame *ctrlFrame;
-	QDockWidget *ctrlFrameDock;
-
-private:
-	QLineEdit *expoTimeLineEdit;
-	QLineEdit *frRateLineEdit;
-	QLineEdit *DGLineEdit;
-	//QLineEdit *AGCGLineEdit;
-	QComboBox *AGCGComboBox;
-
-	unsigned int expoTime{ 2000 };
-	int frRate{ 18 };
-	unsigned int frLength{ 10000 };
-	float dg{1.0};
-	float ag_cg{1.00};
-	bool uploadFlag{ false };//数据上传标志
-
-	//工具栏
-	/*QToolBar *fileTool;
-	QToolBar *zoomTool;
-	QToolBar *rotateTool;
-	QToolBar *mirrorTool;
-	QToolBar *doToolBar;*/
-
-	//状态栏
-	QLabel  *expoTimeLabel;
-	QLabel  *frRateLabel;
-	QLabel  *frLengthLabel;	
-	QLabel  *infoLabel;
+//	QFrame *ctrlFrame;
+//	QDockWidget *ctrlFrameDock;
+//
+//private:
+//	QLineEdit *expoTimeLineEdit;
+//	QLineEdit *frRateLineEdit;
+//	QLineEdit *DGLineEdit;
+//	//QLineEdit *AGCGLineEdit;
+//	QComboBox *AGCGComboBox;
+//
+//	unsigned int expoTime{ 2000 };
+//	int frRate{ 18 };
+//	unsigned int frLength{ 10000 };
+//	float dg{1.0};
+//	float ag_cg{1.00};
+//	bool uploadFlag{ false };//数据上传标志
 };
 
 #endif // QQUICKLOOKCAMERA_H
