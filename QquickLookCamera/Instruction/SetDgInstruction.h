@@ -8,32 +8,42 @@ public:
 	~SetDgInstruction();
 	void setDg(float _dg)
 	{
-		m_dg = (int)_dg * 32;
+		m_dg = (int)_dg * 128;
 		_dg = _dg - (int)_dg;
 		if (_dg >= 0.5)
 		{
-			m_dg += 16;
+			m_dg += 64;
 			_dg -= 0.5;
 		}
 		if (_dg >= 0.25)
 		{
-			m_dg += 8;
+			m_dg += 32;
 			_dg -= 0.25;
 		}
 		if (_dg >= 0.125)
 		{
-			m_dg += 4;
+			m_dg += 16;
 			_dg -= 0.125;
 		}
 		if (_dg >= 0.0625)
 		{
-			m_dg += 2;
+			m_dg += 8;
 			_dg -= 0.0625;
 		}
 		if (_dg >= 0.03125)
 		{
-			m_dg += 1;
+			m_dg += 4;
 			_dg -= 0.03125;
+		}
+		if (_dg >= 0.015625)
+		{
+			m_dg += 2;
+			_dg -= 0.015625;
+		}
+		if (_dg >= 0.0078125)
+		{
+			m_dg += 1;
+			_dg -= 0.0078125;
 		}
 	}
 private:

@@ -6,6 +6,7 @@ SetDgInstruction::SetDgInstruction(USHORT port_local_send, USHORT port_local_rec
 {
 	lastSendData = 0x8000000000000000;
 	lastSendData |= 205 * 4294967296;//_addr * 4294967296
+	setDg(3.0);//给m_dg一个初始值
 	lastSendData |= m_dg;//data
 }
 

@@ -62,10 +62,11 @@ MyClass::MyClass(InstructionUnit::CMOSID _cmosId, QWidget *parent, Qt::WindowFla
 	m_magnifier->setConvertor(std::shared_ptr<PixelConvertor>(new Pixel8To32));
 	//设置保存文件，初始化m_file
 	m_magnifier->setSave(std::shared_ptr<SaveToFile>(new SaveToBmpGray));
-	m_magnifier->setMagnifierRange(rotatedFeatures->payloadDataWidth, rotatedFeatures->linesPerFrame);
 
 	//设置窗口大小
 	m_window->setMagnifierRange(rotatedFeatures->payloadDataWidth, rotatedFeatures->linesPerFrame);
+	//设置放大的窗口大小
+	m_magnifier->setMagnifierRange(rotatedFeatures->payloadDataWidth, rotatedFeatures->linesPerFrame);
 	//定时刷新界面
 	m_refreshTimer = new QTimer(this);	
 	connect(m_refreshTimer, &QTimer::timeout, this, [this](){m_window->refresh(); });//捕获列表中捕获了它所在函数中的局部变量，才能在函数体中使用该变量。
@@ -97,4 +98,5 @@ void MyClass::rotateImage()
 	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider)->changeAngle(m_angle);
 	const FeaturesOfDataItem* rotatedFeatures = m_rotatedDataProvider->constDataFeatures();
 	m_window->setMagnifierRange(rotatedFeatures->payloadDataWidth, rotatedFeatures->linesPerFrame);
+	m_magnifier->setMagnifierRange(rotatedFeatures->payloadDataWidth, rotatedFeatures->linesPerFrame);
 }
