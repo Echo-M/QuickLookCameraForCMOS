@@ -1,10 +1,10 @@
 #pragma once
-#include "Instruction.h"
-class InstructionProcess
+#include "InstructionUnit.h"
+class InstructionProxy
 {
 public:
-	InstructionProcess(Instruction::CMOSID _cmosId);
-	~InstructionProcess();
+	InstructionProxy(InstructionUnit::CMOSID _cmosId);
+	~InstructionProxy();
 	bool AECRun();
 	bool setExpoTime(unsigned int _expoTime);
 	bool SetFPS(int _fps);
@@ -27,7 +27,7 @@ private:
 	USHORT port_far_send;
 	char* ip_local;
 	char* ip_far;
-	Instruction *instruct;
-	Instruction::CMOSID m_cmosId;
+	InstructionUnit *instruct;
+	InstructionUnit::CMOSID m_cmosId;
 };
 

@@ -8,7 +8,7 @@ SaveToBmpGray::~SaveToBmpGray()
 {
 }
 
-bool SaveToBmpGray::save(const unsigned char* src, int height, int width, std::string path, std::string name)
+void SaveToBmpGray::save(const unsigned char* src, int height, int width, std::string path, std::string name)
 {
 	int imagDataSize = height*width; // imag data size
 
@@ -16,19 +16,19 @@ bool SaveToBmpGray::save(const unsigned char* src, int height, int width, std::s
 	RGBQUAD rgbQuad[256];
 	for (int i = 0; i < 256; ++i)
 	{
-		rgbQuad[i].rgbBlue = i;
-		rgbQuad[i].rgbGreen = i;
-		rgbQuad[i].rgbRed = i;
+		rgbQuad[i].rgbBlue = (BYTE)i;
+		rgbQuad[i].rgbGreen = (BYTE)i;
+		rgbQuad[i].rgbRed = (BYTE)i;
 		rgbQuad[i].rgbReserved = i;
 	}
 
 	//位图第一部分，位图文件头
 	BITMAPFILEHEADER *bfHeader{ new BITMAPFILEHEADER };
 	bfHeader->bfType = (WORD)0x4d42;  // string"BM"  
-	bfHeader->bfSize = imagDataSize + sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+sizeof(rgbQuad); // file size
+	bfHeader->bfSize = (DWORD)(imagDataSize + sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+sizeof(rgbQuad)); // file size
 	bfHeader->bfReserved1 = 0; // reserved  
 	bfHeader->bfReserved2 = 0; // reserved  
-	bfHeader->bfOffBits = sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+sizeof(rgbQuad); // real data 位置  
+	bfHeader->bfOffBits = (DWORD)(sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+sizeof(rgbQuad)); // real data 位置  
 
 	//位图第二部分，位图信息头  
 	BITMAPINFOHEADER *biHeader{ new BITMAPINFOHEADER };
@@ -47,11 +47,11 @@ bool SaveToBmpGray::save(const unsigned char* src, int height, int width, std::s
 	//打开文件并保存
 	//文件路径
 	std::string fpath;
-	fpath = fpath+ path;
+	fpath += path;
 	if (name.empty())
 		fpath += "IMG_";
 	else
-		fpath += name + "_IMG_";
+		fpath += name + "_";
 	SYSTEMTIME st;
 	GetLocalTime(&st);
 	char time[20];
@@ -62,12 +62,10 @@ bool SaveToBmpGray::save(const unsigned char* src, int height, int width, std::s
 	}
 	fpath += time;
 	fpath += ".bmp";
-	std::fstream file(fpath, std::ios::out);        //输出方式写文件
+	std::fstream file(fpath, std::ios::out | std::ios::binary);
 	file.write((char*)bfHeader, sizeof(BITMAPFILEHEADER));
 	file.write((char*)biHeader, sizeof(BITMAPINFOHEADER));
 	file.write((char*)rgbQuad, sizeof(rgbQuad));
 	file.write((char*)src, imagDataSize);
 	file.close();
-
-	return true;
 }

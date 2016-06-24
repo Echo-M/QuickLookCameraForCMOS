@@ -25,20 +25,29 @@ class MyClass : public QWidget
 	Q_OBJECT
 
 public:
-	MyClass(int _cmosId, int _angle, QWidget *parent = 0, Qt::WindowFlags f = 0);
+	MyClass(InstructionUnit::CMOSID _cmosId, QWidget *parent = 0, Qt::WindowFlags f = 0);
 	~MyClass();
 	void setSaveFile();
+	bool onMainWindowClosed()
+	{
+		qDebug() << "mainWindow closed!!!\n";
+		return m_window->onStopActionTriggerd();
+	}
 protected:
-	void onMousePressed()
+	void onMouseDoubleClicked()
 	{
 		m_magnifier->show();
 	}
+	/*void onMouseDoubleClicked()
+	{
+		rotateImage();
+	}*/
 private:
-	int cmosId;
+	InstructionUnit::CMOSID cmosId;
 	int m_assWidth;
 	int m_height;
 	int m_imgWidth;
-	int m_angle;//需要旋转的角度
+	int m_angle;
 	const int m_BufPicNum;//缓冲区存储多少张图像的数据
 	QGridLayout *gridLayout{ new QGridLayout(this) };
 protected:
@@ -59,7 +68,8 @@ protected:
 	ImageWindowItem *m_window{ new ImageWindowItem };
 	ImageMagnifierItem *m_magnifier{ new ImageMagnifierItem };
 
-private slots :
+private:
+	void rotateImage();
 	//放大显示
     //void showMagnifier();
 };

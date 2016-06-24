@@ -11,6 +11,42 @@ RotatedImageDataItem::~RotatedImageDataItem()
 {
 }
 
+bool RotatedImageDataItem::changeAngle(int _angle)
+{
+	m_angle = _angle;
+	stop();
+
+	//求变换后的宽和高
+	double angleRad = (double)m_angle / 180 * 3.1415926;
+	double fcos = cos(angleRad);
+	double fsin = sin(angleRad);
+	int width = m_width*abs(fcos) + m_height*abs(fsin);
+	if (width % 4 != 0) width += 4 - width % 4;
+	int height = m_width*abs(fsin) + m_height*abs(fcos);
+	if (height % 4 != 0) height += 4 - height % 4;
+	std::shared_ptr<unsigned char> img[2];
+	for (int i = 0; i < 2; ++i)
+	{
+		img[i].reset(new unsigned char[width*height]);
+		if (!img[i])
+			return false;
+	}
+
+	//stop processing , reset image&assist data ptr, set features of width&height
+	stop();
+	for (int i = 0; i < 2; ++i)
+	{
+		m_rotatedImageBuffer[i] = img[i];
+	}
+
+
+	//start processing
+	IDataItem::setup(m_assWidth, width, height);
+	start();
+
+	return true;
+}
+
 //bool RotatedImageDataItem::setup(int assWidth, int imgWidth, int height)//辅助数据宽度，变换后的宽和高
 //{
 //	if (assWidth <0 || imgWidth <= 0 || height <= 0)
@@ -61,6 +97,7 @@ bool RotatedImageDataItem::setup(int _assWidth, int _imgWidth, int _height)
 
 	m_height = _height;
 	m_width = _imgWidth;
+	m_assWidth = _assWidth;
 
 	//求变换后的宽和高
 	double angleRad = (double)m_angle / 180 * 3.1415926;

@@ -103,15 +103,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_myclass.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="QData\Instruction.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QData\InstructionProcess.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QData\semaphore.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QData\RotatedImageDataItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -140,6 +131,33 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="QView\ImageWindowItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instruction\InstructionProxy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instruction\InstructionUnit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instruction\semaphore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instruction\AECRunInstruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instruction\StopInstruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instruction\SetDgInstruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instruction\SetAgCgInstruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instruction\SetFPSInstruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Instruction\SetExpoTimeInstruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -203,15 +221,6 @@
     <ClInclude Include="SaveFile\SaveToBmpGray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="QData\Instruction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QData\InstructionProcess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QData\semaphore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="QData\RotatedImageDataItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -222,6 +231,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QData\ZoomedImageDataItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruction\InstructionProxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruction\InstructionUnit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruction\semaphore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruction\AECRunInstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruction\StopInstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruction\SetDgInstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruction\SetAgCgInstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruction\SetFPSInstruction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruction\SetExpoTimeInstruction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -183,6 +183,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Instruction\InstructionProxy.cpp" />
+    <ClCompile Include="Instruction\InstructionUnit.cpp" />
+    <ClCompile Include="Instruction\semaphore.cpp" />
+    <ClCompile Include="Instruction\AECRunInstruction.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="myclass.cpp" />
     <ClCompile Include="QData\RotatedImageDataItem.cpp" />
@@ -193,9 +197,6 @@
     <ClCompile Include="QData\IDataItem.cpp" />
     <ClCompile Include="QData\IDataProcessUnit.cpp" />
     <ClCompile Include="QData\InputCMOS.cpp" />
-    <ClCompile Include="QData\Instruction.cpp" />
-    <ClCompile Include="QData\InstructionProcess.cpp" />
-    <ClCompile Include="QData\semaphore.cpp" />
     <ClCompile Include="qquicklookcamera.cpp" />
     <ClCompile Include="QView\ImageMagnifierItem.cpp" />
     <ClCompile Include="QView\ImageWindowItem.cpp" />
@@ -208,6 +209,11 @@
     <ClCompile Include="SaveFile\SaveToBmpGray.cpp" />
     <ClCompile Include="SaveFile\SaveToFile.cpp" />
     <ClCompile Include="QData\ZoomedImageDataItem.cpp" />
+    <ClCompile Include="Instruction\StopInstruction.cpp" />
+    <ClCompile Include="Instruction\SetDgInstruction.cpp" />
+    <ClCompile Include="Instruction\SetAgCgInstruction.cpp" />
+    <ClCompile Include="Instruction\SetFPSInstruction.cpp" />
+    <ClCompile Include="Instruction\SetExpoTimeInstruction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="qquicklookcamera.h">
@@ -230,10 +236,16 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Instruction\InstructionProxy.h" />
+    <ClInclude Include="Instruction\InstructionUnit.h" />
+    <ClInclude Include="Instruction\semaphore.h" />
+    <ClInclude Include="Instruction\AECRunInstruction.h" />
     <ClInclude Include="QData\RotatedImageDataItem.h" />
-    <ClInclude Include="QData\Instruction.h" />
-    <ClInclude Include="QData\InstructionProcess.h" />
-    <ClInclude Include="QData\semaphore.h" />
+    <ClInclude Include="Instruction\StopInstruction.h" />
+    <ClInclude Include="Instruction\SetDgInstruction.h" />
+    <ClInclude Include="Instruction\SetAgCgInstruction.h" />
+    <ClInclude Include="Instruction\SetFPSInstruction.h" />
+    <ClInclude Include="Instruction\SetExpoTimeInstruction.h" />
     <CustomBuild Include="QView\ImageWindowItem.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing ImageWindowItem.h...</Message>
