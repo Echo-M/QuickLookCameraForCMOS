@@ -17,19 +17,19 @@ MyClass::MyClass(InstructionUnit::CMOSID _cmosId, QWidget *parent, Qt::WindowFla
 {
 	if (_cmosId == InstructionUnit::CMOSE)
 	{
-		m_inputSrc = new InputCMOS(3956, inet_addr("192.168.1.2"));
+		m_inputSrc = new InputCMOS(4008, inet_addr("192.168.1.2"));
 	}
 	else if (_cmosId == InstructionUnit::CMOS1)
 	{
-		m_inputSrc = new InputCMOS(3957, inet_addr("192.168.1.2"));
+		m_inputSrc = new InputCMOS(4004, inet_addr("192.168.1.2"));
 	}
 	else if (_cmosId == InstructionUnit::CMOS2)
 	{
-		m_inputSrc = new InputCMOS(3958, inet_addr("192.168.1.2"));
+		m_inputSrc = new InputCMOS(4002, inet_addr("192.168.1.2"));
 	}
 	else if (_cmosId == InstructionUnit::CMOS3)
 	{
-		m_inputSrc = new InputCMOS(3959, inet_addr("192.168.1.2"));
+		m_inputSrc = new InputCMOS(4001, inet_addr("192.168.1.2"));
 	}
 	//m_rotatedDataProvider = new RotatedImageDataItem(m_angle);
 	//初始化数据缓冲区

@@ -38,7 +38,7 @@ public:
 	void setCmosNumber(int number);
     virtual IWindowItem* clone() const override;
     virtual int setDataItemPtr(std::shared_ptr<IDataItem>& ptr)  override;
-    virtual int refresh() override;
+    virtual int refresh() override;	
     virtual QWidget* widget() /*const*/ override {return this;}
 
 public slots:
@@ -46,7 +46,7 @@ public slots:
     {
 		m_cursorPostion.rx() = x;
         m_cursorPostion.ry() = y;	
-        QWidget::update();
+        QWidget::update();		
     }	
     void setMagnifierRange(int width, int height); //set range of zoom in area
 

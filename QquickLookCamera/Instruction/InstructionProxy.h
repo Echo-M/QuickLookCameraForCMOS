@@ -27,7 +27,6 @@ private:
 	USHORT port_far_send;
 	char* ip_local;
 	char* ip_far;
-	InstructionUnit *instruct;
 	InstructionUnit::CMOSID m_cmosId;
 };
 

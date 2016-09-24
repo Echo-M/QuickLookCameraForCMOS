@@ -78,7 +78,7 @@ bool InstructionUnit::buildCmdReg(int _addr, int _data)
 
 void InstructionUnit::sendCmdReg(int _addr, int _data)
 {
-	if (m_sending)
+	//if (m_sending)
 	{
 		if (SENDFLAG == true) 
 			sendSemaphore.wait();
@@ -95,7 +95,7 @@ void InstructionUnit::sendCmdReg(int _addr, int _data)
 
 void InstructionUnit::ClearFIFO()
 {
-	if (m_sending)
+	//if (m_sending)
 	{
 		if (SENDFLAG == true) 
 			sendSemaphore.wait();
@@ -135,7 +135,7 @@ void InstructionUnit::ClearFIFO()
 
 void InstructionUnit::PowerDown()
 {
-	if (m_sending)
+	//if (m_sending)
 	{
 		if (SENDFLAG == true) 
 			sendSemaphore.wait();
@@ -156,7 +156,7 @@ void InstructionUnit::PowerDown()
 
 void InstructionUnit::PowerUp()
 {
-	if (m_sending)
+	//if (m_sending)
 	{
 		if (SENDFLAG == true)
 			sendSemaphore.wait();
@@ -233,6 +233,8 @@ void InstructionUnit::ExtraConfig()
 	sendCmdReg(194, 0x00e4);
 	sendCmdReg(199, 100);
 	sendCmdReg(200, 10000);//设置帧率为18FPS,则帧长为10000
+						   //15FPS则为12000
+						   //10FPS则为18000
 }
 void InstructionUnit::EnableSequencer()
 {
@@ -306,15 +308,12 @@ void InstructionUnit::thrReceive()
 
 		if (nret > 0)
 		{
-			//for (int i = 0; i<(int)fdsock.fd_count; i++)
-			//{
-			//memset(recvbuf, 0, sizeof(*recvbuf));//清空接收缓冲区
 			if (FD_ISSET(sock_recv, &fdsock))//若该套接字可读
 			{
 				int nrecv = ::recvfrom(sock_recv, (char*)cmdRecv, sizeof(CMD), 0, (LPSOCKADDR)&addr, &alen);
 				if (nrecv == 24)
 				if (cmdRecv->synWord == htonl(0x05ccf0ff))
-				//if ((cmdRecv->data & 0x0111111111111111) == (cmd->data & 0x0111111111111111))
+				if ((cmdRecv->data & 0x0111111111111111) == (cmd->data & 0x0111111111111111))
 				{
 					qDebug() << ("\n收到%d个字节\n", nrecv);
 					if (cmd->data == htonll(lastSendData))

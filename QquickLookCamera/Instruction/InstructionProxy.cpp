@@ -13,7 +13,7 @@ InstructionProxy::InstructionProxy(InstructionUnit::CMOSID _cmosId) :
 	port_far_send(4567),
 	port_local_recv(3955),
 	ip_local("192.168.1.2"),
-	ip_far("192.168.1.2")
+	ip_far("192.168.1.1")
 {
 }
 
@@ -24,7 +24,7 @@ InstructionProxy::~InstructionProxy()
 
 bool InstructionProxy::AECRun()
 {
-	instruct = new AECRunInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
+	AECRunInstruction* instruct = new AECRunInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
 	instruct->SetCmosId(m_cmosId);
 	instruct->start();
 
@@ -48,8 +48,9 @@ bool InstructionProxy::AECRun()
 
 bool InstructionProxy::SetFPS(int _fps)
 {
-	instruct = new SetFPSInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
+	SetFPSInstruction *instruct{ new SetFPSInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far) };
 	instruct->SetCmosId(m_cmosId);
+	instruct->setFPS(_fps);
 	instruct->start();
 
 	int i = 0;
@@ -66,14 +67,15 @@ bool InstructionProxy::SetFPS(int _fps)
 
 	}
 	instruct->closeSock();
-	delete instruct;
+	//delete instruct;
 	return true;
 }
 
 bool InstructionProxy::setExpoTime(unsigned int _expoTime)
 {
-	instruct = new SetExpoTimeInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
+	SetExpoTimeInstruction *instruct = new SetExpoTimeInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
 	instruct->SetCmosId(m_cmosId);
+	instruct->setExpoTime(_expoTime);
 	instruct->start();
 
 	int i = 0;
@@ -96,7 +98,7 @@ bool InstructionProxy::setExpoTime(unsigned int _expoTime)
 
 bool InstructionProxy::Stop()
 {
-	instruct = new StopInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
+	StopInstruction* instruct = new StopInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
 	instruct->SetCmosId(m_cmosId);
 	instruct->start();
 
@@ -120,8 +122,9 @@ bool InstructionProxy::Stop()
 
 bool InstructionProxy::SetAGCG(float _total)
 {
-	instruct = new SetAgCgInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
+	SetAgCgInstruction* instruct = new SetAgCgInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
 	instruct->SetCmosId(m_cmosId);
+	instruct->setTotalGain(_total);
 	instruct->start();
 
 	int i = 0;
@@ -144,8 +147,9 @@ bool InstructionProxy::SetAGCG(float _total)
 
 bool InstructionProxy::SetDG(float _dg)
 {
-	instruct = new SetDgInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
+	SetDgInstruction* instruct = new SetDgInstruction(port_local_send, port_local_recv, port_far_send, ip_local, ip_far);
 	instruct->SetCmosId(m_cmosId);
+	instruct->setDg(_dg);
 	instruct->start();
 
 	int i = 0;

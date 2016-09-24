@@ -40,6 +40,9 @@ public:
 		else
 		if (fabs(_gainTotal - 8.00) < 0.1)
 			m_ag_cg = 0x0041;
+		lastSendData = 0x8000000000000000;
+		lastSendData |= 204 * 4294967296;//_addr * 4294967296
+		lastSendData |= m_ag_cg;//data
 	}
 private:
 	unsigned int m_ag_cg;
