@@ -58,7 +58,7 @@ void ImageWindowItem::onAg_cgActionTriggerd()
 		return;
 	}
 
-	InstructionProcess instruct(cmosNumber);
+	InstructionProxy instruct(cmosNumber);
 
 	QStringList list;
 	list << tr("1.00") << tr("1.14") << tr("1.33") << tr("1.60") << tr("2.00") << tr("2.29") << tr("2.67") << tr("3.20") << tr("4.00") << tr("5.33") << tr("8.00");
@@ -94,7 +94,7 @@ void ImageWindowItem::onDgActionTriggerd()
 		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
 		return;
 	}
-	InstructionProcess instruct(cmosNumber);
+	InstructionProxy instruct(cmosNumber);
 
 	bool ok;
 	double value = QInputDialog::getDouble(this, tr("digital gain setting"), tr("input digital gain:"), m_dg, 0, 10, 1, &ok);
@@ -116,7 +116,7 @@ void ImageWindowItem::onExpoActionTriggerd()
 		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
 		return;
 	}
-	InstructionProcess instruct(cmosNumber);
+	InstructionProxy instruct(cmosNumber);
 
 	bool ok;
 	int value = QInputDialog::getInt(this, tr("exposure time setting"), tr("input exposure time:"), m_expoTime, 0, 180000 / m_frRate, 1, &ok);
@@ -138,7 +138,7 @@ void ImageWindowItem::onFpsActionTriggerd()
 		QMessageBox::critical(this, tr("Error"), tr("Data has not been upload! Please click the dataupload button!"));
 		return;
 	}
-	InstructionProcess instruct(cmosNumber);
+	InstructionProxy instruct(cmosNumber);
 
 	bool ok;
 	int value = QInputDialog::getInt(this, tr("frame rate setting"), tr("input fps:"), m_frRate, 0, 50, 1, &ok);
@@ -155,7 +155,7 @@ void ImageWindowItem::onFpsActionTriggerd()
 }
 void ImageWindowItem::onStartActionTriggerd()
 {
-	InstructionProcess instruct(cmosNumber);
+	InstructionProxy instruct(cmosNumber);
 	if(!instruct.AECRun())
 	{
 		QMessageBox::critical(this, tr("Error"), tr("Failed to upload data!"));
@@ -163,15 +163,16 @@ void ImageWindowItem::onStartActionTriggerd()
 	}
 	uploadFlag = true;
 }
-void ImageWindowItem::onStopActionTriggerd()
+bool ImageWindowItem::onStopActionTriggerd()
 {
-	InstructionProcess instruct(cmosNumber);
+	InstructionProxy instruct(cmosNumber);
 	if(!instruct.Stop())
 	{
 		QMessageBox::critical(this, tr("Error"), tr("Failed to stop uploading!"));
-		return;
+		return false;
 	}
 	uploadFlag = false;
+	return true;
 }
 
 void ImageWindowItem::onMouseMoved(const QPoint &absPos)
@@ -207,7 +208,7 @@ void ImageWindowItem::setSavePath(QString fpath)
 {
 	m_savePath = fpath;
 }
-void ImageWindowItem::setCmosNumber(Instruction::CMOSID number)//设置显示通道
+void ImageWindowItem::setCmosNumber(InstructionUnit::CMOSID number)//设置显示通道
 {
 	cmosNumber = number;
 }

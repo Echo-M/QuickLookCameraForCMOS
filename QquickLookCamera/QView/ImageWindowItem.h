@@ -7,11 +7,13 @@
 #include <QWidget>
 #include "IWindowItem.h"
 #include <QMouseEvent>
+#include <QCloseEvent>
 #include <QMenu>
+#include <QDebug>
 #include <QContextMenuEvent>
 #include "../QData/IDataItem.h"
 #include "./Utility/PixelConvertor.h"
-#include "QData/InstructionProcess.h"
+#include "Instruction/InstructionProxy.h"
 #include "../SaveFile/SaveToFile.h"
 class ImageWindowItem : public QWidget, public IWindowItem
 {
@@ -51,6 +53,10 @@ protected:
 	//	if (ev->button() == Qt::LeftButton)
 	//		emit mouseLeftButtonClicked(ev->pos());
 	//}
+	void closeEvent(QCloseEvent *ev)
+	{
+		qDebug() << "cmos closed----\n";
+	}
 	//鼠标移动
 	virtual void mouseMoveEvent(QMouseEvent *ev) override
 	{
@@ -68,9 +74,10 @@ protected:
 		menu->show();
 	}
 //右键菜单需要用到的槽函数
+public:
+	bool onStopActionTriggerd();
 protected:
 	void onStartActionTriggerd();
-	void onStopActionTriggerd();
 	void onExpoActionTriggerd();
 	void onFpsActionTriggerd();
 	void onAg_cgActionTriggerd();
@@ -79,7 +86,7 @@ protected:
 	void onSaveFileActionTriggerd();
 	void onRotateActionTriggerd();
 private:
-	Instruction::CMOSID cmosNumber;
+	InstructionUnit::CMOSID cmosNumber;
 	QImage::Format strFormat;
 
 protected:
@@ -92,7 +99,7 @@ public:
 public:
 	ImageWindowItem(QWidget* parent = nullptr, Qt::WindowFlags f = 0, QImage::Format str = QImage::Format_ARGB32);//不带默认形参的只能放在带默认形参的前面
     ~ImageWindowItem();
-	void setCmosNumber(Instruction::CMOSID number);
+	void setCmosNumber(InstructionUnit::CMOSID number);
     virtual IWindowItem* clone() const override;
     virtual int setDataItemPtr(std::shared_ptr<IDataItem>& ptr)  override;
     virtual int refresh() override;

@@ -21,10 +21,10 @@ QquickLookCamera::QquickLookCamera(QWidget *parent)
 	imageLayout = new QGridLayout;
 	imageWidget = new QWidget;
 
-	MyClass *showWidget0 = new MyClass(Instruction::CMOSE, this);
-	MyClass *showWidget1 = new MyClass(Instruction::CMOS1, this);
-	MyClass *showWidget2 = new MyClass(Instruction::CMOS2, this);
-	MyClass *showWidget3 = new MyClass(Instruction::CMOS3, this);
+	showWidget0 = new MyClass(InstructionUnit::CMOSE, this);
+	showWidget1 = new MyClass(InstructionUnit::CMOS1, this);
+	showWidget2 = new MyClass(InstructionUnit::CMOS2, this);
+	showWidget3 = new MyClass(InstructionUnit::CMOS3, this);
 	imageLayout->addWidget(showWidget0,0,0);
 	imageLayout->addWidget(showWidget1,0,1);
 	imageLayout->addWidget(showWidget2,1,0);
@@ -203,16 +203,16 @@ QquickLookCamera::~QquickLookCamera()
 //
 //void QquickLookCamera::AECRun()
 //{
-//	//InstructionProcess *instruct = new InstructionProcess(Instruction::CMOS1);
+//	//InstructionProxy *instruct = new InstructionProxy(Instruction::CMOS1);
 //	//instruct->AECRun();
 //	//delete instruct;
-//	InstructionProcess *instruct1 = new InstructionProcess(Instruction::CMOSE);
+//	InstructionProxy *instruct1 = new InstructionProxy(Instruction::CMOSE);
 //	instruct1->AECRun();
 //	delete instruct1;
-//	//InstructionProcess *instruct2 = new InstructionProcess(Instruction::CMOS2);
+//	//InstructionProxy *instruct2 = new InstructionProxy(Instruction::CMOS2);
 //	//instruct2->AECRun();
 //	//delete instruct2;
-//	//InstructionProcess *instruct3 = new InstructionProcess(Instruction::CMOS3);
+//	//InstructionProxy *instruct3 = new InstructionProxy(Instruction::CMOS3);
 //	//instruct3->AECRun();
 //	//delete instruct3;
 //	uploadFlag = true;
@@ -221,7 +221,7 @@ QquickLookCamera::~QquickLookCamera()
 //}
 //void QquickLookCamera::Stop()
 //{
-//	InstructionProcess instruct(Instruction::CMOSE);
+//	InstructionProxy instruct(Instruction::CMOSE);
 //	for (int i = 0; i < 10; ++i)
 //	{
 //		instruct.Stop();
@@ -247,7 +247,7 @@ QquickLookCamera::~QquickLookCamera()
 //	else
 //		expoTime = _time;
 //
-//	InstructionProcess *instruct = new InstructionProcess(Instruction::CMOSE);
+//	InstructionProxy *instruct = new InstructionProxy(Instruction::CMOSE);
 //	//instruct.SetDG(dg);
 //	instruct->setExpoTime(expoTime);
 //	delete instruct;
@@ -272,7 +272,7 @@ QquickLookCamera::~QquickLookCamera()
 //	frRate = _rate;
 //	frLength = 180000 / frRate;
 //
-//	InstructionProcess instruct(Instruction::CMOSE);
+//	InstructionProxy instruct(Instruction::CMOSE);
 //	instruct.SetFPS(frRate);
 //
 //	QString tempfr = tr(" | frame rate: ");
@@ -299,7 +299,7 @@ QquickLookCamera::~QquickLookCamera()
 //	}
 //	ag_cg = _totalGain;
 //
-//	InstructionProcess instruct(Instruction::CMOSE);
+//	InstructionProxy instruct(Instruction::CMOSE);
 //	//instruct.SetDG(dg);
 //	//instruct.setExpoTime(expoTime);
 //	instruct.SetAGCG(ag_cg);
@@ -317,7 +317,7 @@ QquickLookCamera::~QquickLookCamera()
 //	}
 //	dg = _dg;
 //
-//	InstructionProcess instruct(Instruction::CMOSE);
+//	InstructionProxy instruct(Instruction::CMOSE);
 //	instruct.SetDG(dg);
 //	//instruct.setExpoTime(expoTime);
 //	//instruct.SetAGCG(ag_cg);

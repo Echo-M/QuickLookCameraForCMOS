@@ -25,9 +25,14 @@ class MyClass : public QWidget
 	Q_OBJECT
 
 public:
-	MyClass(Instruction::CMOSID _cmosId, QWidget *parent = 0, Qt::WindowFlags f = 0);
+	MyClass(InstructionUnit::CMOSID _cmosId, QWidget *parent = 0, Qt::WindowFlags f = 0);
 	~MyClass();
 	void setSaveFile();
+	bool onMainWindowClosed()
+	{
+		qDebug() << "mainWindow closed!!!\n";
+		return m_window->onStopActionTriggerd();
+	}
 protected:
 	void onMouseDoubleClicked()
 	{
@@ -38,7 +43,7 @@ protected:
 		rotateImage();
 	}*/
 private:
-	Instruction::CMOSID cmosId;
+	InstructionUnit::CMOSID cmosId;
 	int m_assWidth;
 	int m_height;
 	int m_imgWidth;

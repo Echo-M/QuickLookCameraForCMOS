@@ -3,7 +3,8 @@
 
 #include <QMainWindow>
 #include "myclass.h"
-#include "../QData/InstructionProcess.h"
+#include <QCloseEvent>
+#include "../Instruction/InstructionProxy.h"
 class QLabel;
 class QComboBox;
 class QLineEdit;
@@ -16,7 +17,17 @@ class QquickLookCamera : public QMainWindow
 public:
 	QquickLookCamera(QWidget *parent = 0);
 	~QquickLookCamera();
-
+	void closeEvent(QCloseEvent *ev)
+	{
+		if (!showWidget0->onMainWindowClosed() || !showWidget1->onMainWindowClosed() || !showWidget2->onMainWindowClosed() || !showWidget3->onMainWindowClosed())
+		{//stop failed
+			QMessageBox::StandardButton button = QMessageBox::question(this, tr("exit program"), tr("waring: Data is still uploading!Still to exit the program?"), QMessageBox::No | QMessageBox::Yes,QMessageBox::No);
+			if (button == QMessageBox::No||button==QMessageBox::Cancel)
+				ev->ignore();
+			else if (button == QMessageBox::Yes)
+				ev->accept();
+		}
+	}
 	//创建相机控制子窗口
 	//void createControlFrame();
 	//创建状态栏
@@ -39,6 +50,10 @@ private:
 //	QString filename;
 	QWidget *imageWidget;
 	QGridLayout *imageLayout;
+	MyClass *showWidget0;
+	MyClass *showWidget1;
+	MyClass *showWidget2;
+	MyClass *showWidget3;
 //	QFrame *ctrlFrame;
 //	QDockWidget *ctrlFrameDock;
 //

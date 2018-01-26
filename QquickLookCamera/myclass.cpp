@@ -1,10 +1,12 @@
 #include "myclass.h"
-#include "QData\Instruction.h"
+#include "Instruction\InstructionUnit.h"
 #include <iostream>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-MyClass::MyClass(Instruction::CMOSID _cmosId, QWidget *parent, Qt::WindowFlags f)
+#include "qquicklookcamera.h"
+class qquickLookCamera;
+MyClass::MyClass(InstructionUnit::CMOSID _cmosId, QWidget *parent, Qt::WindowFlags f)
 	: QWidget(parent, f),
 	cmosId(_cmosId),
 	m_height(1024), 
@@ -13,21 +15,21 @@ MyClass::MyClass(Instruction::CMOSID _cmosId, QWidget *parent, Qt::WindowFlags f
 	m_angle(0),
 	m_BufPicNum(64)
 {
-	if (_cmosId==Instruction::CMOSE)
+	if (_cmosId == InstructionUnit::CMOSE)
 	{
-		m_inputSrc = new InputCMOS(3956, inet_addr("192.168.1.2"));
+		m_inputSrc = new InputCMOS(4008, inet_addr("192.168.1.2"));
 	}
-	else if (_cmosId == Instruction::CMOS1)
+	else if (_cmosId == InstructionUnit::CMOS1)
 	{
-		m_inputSrc = new InputCMOS(3957, inet_addr("192.168.1.2"));
+		m_inputSrc = new InputCMOS(4004, inet_addr("192.168.1.2"));
 	}
-	else if (_cmosId == Instruction::CMOS2)
+	else if (_cmosId == InstructionUnit::CMOS2)
 	{
-		m_inputSrc = new InputCMOS(3958, inet_addr("192.168.1.2"));
+		m_inputSrc = new InputCMOS(4002, inet_addr("192.168.1.2"));
 	}
-	else if (_cmosId == Instruction::CMOS3)
+	else if (_cmosId == InstructionUnit::CMOS3)
 	{
-		m_inputSrc = new InputCMOS(3959, inet_addr("192.168.1.2"));
+		m_inputSrc = new InputCMOS(4001, inet_addr("192.168.1.2"));
 	}
 	//m_rotatedDataProvider = new RotatedImageDataItem(m_angle);
 	//初始化数据缓冲区
@@ -63,6 +65,8 @@ MyClass::MyClass(Instruction::CMOSID _cmosId, QWidget *parent, Qt::WindowFlags f
 
 	//设置窗口大小
 	m_window->setMagnifierRange(rotatedFeatures->payloadDataWidth, rotatedFeatures->linesPerFrame);
+	//设置放大的窗口大小
+	m_magnifier->setMagnifierRange(rotatedFeatures->payloadDataWidth, rotatedFeatures->linesPerFrame);
 	//定时刷新界面
 	m_refreshTimer = new QTimer(this);	
 	connect(m_refreshTimer, &QTimer::timeout, this, [this](){m_window->refresh(); });//捕获列表中捕获了它所在函数中的局部变量，才能在函数体中使用该变量。
@@ -94,4 +98,5 @@ void MyClass::rotateImage()
 	std::dynamic_pointer_cast<RotatedImageDataItem>(m_rotatedDataProvider)->changeAngle(m_angle);
 	const FeaturesOfDataItem* rotatedFeatures = m_rotatedDataProvider->constDataFeatures();
 	m_window->setMagnifierRange(rotatedFeatures->payloadDataWidth, rotatedFeatures->linesPerFrame);
+	m_magnifier->setMagnifierRange(rotatedFeatures->payloadDataWidth, rotatedFeatures->linesPerFrame);
 }
