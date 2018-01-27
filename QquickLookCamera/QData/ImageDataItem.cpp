@@ -1,3 +1,4 @@
+
 ﻿#include "ImageDataItem.h"
 #include "IBuffer.h"
 #include "FeaturesOfDataItem.h"
@@ -73,12 +74,8 @@ void ImageDataItem::process()
 	////start testing
 	//std::shared_ptr<IBuffer>& outputBuffer_zero = m_outputBuffer[0].second;
 	//unsigned char *temp = new unsigned char[1280 * 1024]; 
-	//int t=0;
 	//for (int i = 0; i < 1280 * 1024; ++i)
-	//{
-	//	temp[i] = t;
-	//	if (i % 5120 == 0) t++;
-	//}
+	//	temp[i] = i;
 	////end test
 
 	CMOS_FRAME_HEAD* pkgHeader = nullptr;
